@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "autoharvest",
+  "version": "1.1",
+  "name": "AutoHarvest",
+  "description": "Automatically terminate and harvest crops.",
+  "authors": [
+    "SzYuan"
+  ],
+  "contact": {
+    "repository": "https://github.com/Sz-Yuan/AutoHarvestMod"
+  },
+  "license": "MIT",
+  "icon": "assets/autoharvest/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "cat.szyuan.autoharvest.AutoHarvest"
+    ],
+    "modmenu": [
+      "cat.szyuan.autoharvest.Plugin.ModMenu"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
