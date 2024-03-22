@@ -7,7 +7,8 @@
 ### 需求
 1. Minecraft 1.20.4
 2. [Fabric](https://fabricmc.net/wiki/install)
-3. [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api)
+3. [Fabric API](https://modrinth.com/mod/fabric-api)  
+4. [Cloth Config API](https://modrinth.com/mod/cloth-config)
 
 ### 用法
 使用快捷键“H”在不同模式之间切换。您将在聊天中看到状态。您可以在“设置”中更改此快捷键。
