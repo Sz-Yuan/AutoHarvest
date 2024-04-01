@@ -101,7 +101,6 @@ public class CropManager {
 
     public static final Multimap<Item, Class<? extends AnimalEntity>> FEED_MAP;
     public static final Multimap<Item, Class<? extends AnimalEntity>> SHEAR_MAP;
-
     static {
         FEED_MAP = ArrayListMultimap.create();
         FEED_MAP.put(Items.GOLDEN_CARROT, HorseEntity.class);
