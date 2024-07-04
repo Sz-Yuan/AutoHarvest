@@ -158,9 +158,17 @@ public class CropManager {
 
         // 1.17
         FEED_MAP.put(Items.WHEAT, GoatEntity.class);
-        // disabled due to complexity of interaction
+        // 由于交互复杂禁用美西螈自动喂食
         // FEED_MAP.put(Items.TROPICAL_FISH_BUCKET, AxolotlEntity.class);
 
+        //1.19
+        FEED_MAP.put(Items.SLIME_BALL,FrogEntity.class);
+
+        //1.21
+        FEED_MAP.put(Items.TORCHFLOWER_SEEDS,SnifferEntity.class);//嗅探兽
+        FEED_MAP.put(Items.SPIDER_EYE,ArmadilloEntity.class);//犰狳
+
+        //剪羊毛
         SHEAR_MAP = ArrayListMultimap.create();
         SHEAR_MAP.put(Items.SHEARS, SheepEntity.class);
     }
