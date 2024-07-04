@@ -9,6 +9,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.collection.DefaultedList;
@@ -141,7 +142,7 @@ public class TickListener {
                     ItemStack s = inv.get(idx);
                     if (s.getItem() == lastUsedItem.getItem() &&
                             s.getDamage() == lastUsedItem.getDamage() &&
-                            !s.hasnbt()) {
+                            s.getComponents().isEmpty()) {
                         AutoHarvest.instance.taskManager.Add_MoveItem(idx, p.getInventory().selectedSlot);
                         return s;
                     }
