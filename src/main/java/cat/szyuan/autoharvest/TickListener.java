@@ -108,31 +108,30 @@ public class TickListener {
     private void hoeingTick() {
         World w = p.getEntityWorld();
         int X = (int) Math.floor(p.getX());
-        int Y = (int) Math.floor(p.getY() + 0.2D);// 脚下方块
+        int Y = (int) Math.floor(p.getY() -0.2D);// 脚下方块
         int Z = (int) Math.floor(p.getZ());
         for (int deltaX = -configure.effect_radius.value; deltaX <= configure.effect_radius.value; ++deltaX)
             for (int deltaZ = -configure.effect_radius.value; deltaZ <= configure.effect_radius.value; ++deltaZ) {
-                for (int deltaY = -1; deltaY <= 1; ++deltaY) {
-                    BlockPos pos = new BlockPos(X + deltaX, Y + deltaY, Z + deltaZ);
-                    BlockState state = w.getBlockState(pos);
-                    Block block = state.getBlock();
-                    if ((block == Blocks.DIRT ||
-                            block == Blocks.GRASS_BLOCK ||
-                            block == Blocks.COARSE_DIRT ||
-                            block == Blocks.ROOTED_DIRT) && (
-                            p.getStackInHand(Hand.MAIN_HAND).getItem() == Items.DIAMOND_HOE ||
-                                    p.getStackInHand(Hand.MAIN_HAND).getItem() == Items.WOODEN_HOE ||
-                                    p.getStackInHand(Hand.MAIN_HAND).getItem() == Items.STONE_HOE ||
-                                    p.getStackInHand(Hand.MAIN_HAND).getItem() == Items.IRON_HOE ||
-                                    p.getStackInHand(Hand.MAIN_HAND).getItem() == Items.GOLDEN_HOE ||
-                                    p.getStackInHand(Hand.MAIN_HAND).getItem() == Items.NETHERITE_HOE)) {
-                        if (isWaterNearby(w,pos)){
+                BlockPos pos = new BlockPos(X + deltaX, Y, Z + deltaZ);
+                BlockState state = w.getBlockState(pos);
+                Block block = state.getBlock();
+                if ((block == Blocks.DIRT ||
+                        block == Blocks.GRASS_BLOCK ||
+                        block == Blocks.COARSE_DIRT ||
+                        block == Blocks.ROOTED_DIRT) && (
+                        p.getStackInHand(Hand.MAIN_HAND).getItem() == Items.DIAMOND_HOE ||
+                                p.getStackInHand(Hand.MAIN_HAND).getItem() == Items.WOODEN_HOE ||
+                                p.getStackInHand(Hand.MAIN_HAND).getItem() == Items.STONE_HOE ||
+                                p.getStackInHand(Hand.MAIN_HAND).getItem() == Items.IRON_HOE ||
+                                p.getStackInHand(Hand.MAIN_HAND).getItem() == Items.GOLDEN_HOE ||
+                                p.getStackInHand(Hand.MAIN_HAND).getItem() == Items.NETHERITE_HOE)) {
+                    if (isWaterNearby(w, pos)) {
+                        if (w.getBlockState(pos.up()).getBlock() == Blocks.AIR) {
+                            BlockHitResult blockHitResult = new BlockHitResult(
+                                    new Vec3d(X + deltaX + 0.5, Y, Z + deltaZ + 0.5), Direction.UP, pos, false);
                             assert MinecraftClient.getInstance().interactionManager != null;
-                            BlockPos downPos = pos.down();
-                            BlockHitResult blockHitResult = new BlockHitResult(new Vec3d(X + deltaX + 0.5, Y, Z + deltaZ + 0.5),
-                                    Direction.UP, downPos, false);
-                            MinecraftClient.getInstance().interactionManager.interactBlock(MinecraftClient.getInstance().player,
-                                    Hand.MAIN_HAND, blockHitResult);
+                            MinecraftClient.getInstance().interactionManager.interactBlock(
+                                    MinecraftClient.getInstance().player, Hand.MAIN_HAND, blockHitResult);
                             return;
                         }
                     }
@@ -141,7 +140,7 @@ public class TickListener {
     }
 
     private boolean isWaterNearby(WorldView world, BlockPos pos) {
-        for (BlockPos blockPos : BlockPos.iterate(pos.add(-4, 0, -4), pos.add(4, 1, 4))){
+        for (BlockPos blockPos : BlockPos.iterate(pos.add(-4, 0, -4), pos.add(4, 1, 4))) {
             if (world.getFluidState(blockPos).isIn(FluidTags.WATER)) return true;
         }
         return false;
