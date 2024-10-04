@@ -13,6 +13,7 @@
   "feed": "Feed mode",
   "fishing": "Fishing mode",
   "bonemealing": "Bonemealing mode",
+  "hoeing": "Hoeing mode",
   "notify.switch_to": "%s enabled",
   "notify.lack_of_seed": "You need more seeds",
   "notify.prefix": "[AutoHarvest] ",

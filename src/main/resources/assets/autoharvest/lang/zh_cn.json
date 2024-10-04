@@ -13,6 +13,7 @@
   "feed": "喂食 模式",
   "fishing": "钓鱼 模式",
   "bonemealing": "催熟 模式",
+  "hoeing":"耕地 模式",
   "notify.switch_to":"已切换到 %s",
   "notify.lack_of_seed":"缺少种子",
   "notify.prefix":"[自动收割]",

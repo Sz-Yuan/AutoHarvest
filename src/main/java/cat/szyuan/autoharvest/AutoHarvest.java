@@ -34,7 +34,8 @@ public class AutoHarvest implements ClientModInitializer {
         SEED, // Harvest seeds & flowers
         BONEMEALING,
         FEED, // Feed animals
-        FISHING;// Fishing
+        FISHING,// Fishing
+        HOEING;// 耕地模式
 
         private static HarvestMode[] vals = values();
 
