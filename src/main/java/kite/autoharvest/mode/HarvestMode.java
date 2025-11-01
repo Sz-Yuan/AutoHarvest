@@ -4,7 +4,6 @@ import kite.autoharvest.config.AutoHarvestConfig;
 import kite.autoharvest.util.BoxUtil;
 import kite.autoharvest.util.InteractionHelper;
 import net.minecraft.block.*;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.component.DataComponentTypes;

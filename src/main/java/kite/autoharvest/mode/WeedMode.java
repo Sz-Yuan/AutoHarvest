@@ -1,7 +1,6 @@
 package kite.autoharvest.mode;
 
 import kite.autoharvest.config.AutoHarvestConfig;
-import kite.autoharvest.manager.ModeManager;
 import kite.autoharvest.util.BoxUtil;
 import kite.autoharvest.util.InteractionHelper;
 import net.minecraft.block.Block;
