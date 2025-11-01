@@ -31,9 +31,7 @@ public class AutoHarvest implements ClientModInitializer {
         AutoConfig.register(AutoHarvestConfig.class, GsonConfigSerializer::new);
         ModeCommand.register();
         KeyBindingHelper.registerKeyBinding(TOGGLE_KEY);
-        ClientPlayConnectionEvents.DISCONNECT.register(((hander, client) -> {
-            ModeManager.INSTANCE.clearMode();
-        }));
+        ClientPlayConnectionEvents.DISCONNECT.register(((hander, client) -> ModeManager.INSTANCE.clearMode()));
 
         // Tick 逻辑
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
