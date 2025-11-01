@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "autoharvest",
+  "version": "${version}",
+  "name": "AutoHarvest",
+  "description": "AutoHarvest!!!",
+  "authors": [
+    "KiteJs"
+  ],
+  "contact": {
+    "homepage": "",
+    "sources": ""
+  },
+  "license": "CC0-1.0",
+  "icon": "assets/autoharvest/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "kite.autoharvest.AutoHarvest"
+    ],
+    "modmenu": [
+      "kite.autoharvest.config.AutoHarvestModMenu"
+    ]
+  },
+  "mixins": [],
+  "depends": {
+    "fabricloader": ">=0.17.3",
+    "minecraft": "~1.21.8",
+    "java": ">=21",
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
+}

@@ -1,0 +1,143 @@
+package kite.autoharvest.command;
+
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import kite.autoharvest.config.AutoHarvestConfig;
+import kite.autoharvest.config.modeEnum;
+import kite.autoharvest.manager.ModeManager;
+import kite.autoharvest.mode.*;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.text.Text;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
+import static kite.autoharvest.config.modeEnum.*;
+
+public class ModeCommand {
+
+    private static final List<String> MODE_NAMES = Arrays.asList(
+            "weed", "plant", "harvest", "farmer", "bonemeal", "feed", "fishing", "hoe"
+    );
+
+    public static void register() {
+        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
+                    var autoharvest = ClientCommandManager.literal("autoharvest");
+                    autoharvest
+                            .then(ClientCommandManager.literal("toggle").executes(ModeCommand::executeToggle));
+                    autoharvest
+                            .then(ClientCommandManager.literal("mode")
+                                    .then(ClientCommandManager.argument("mode", StringArgumentType.word())
+                                            .suggests((context, builder) -> suggestModes(builder))
+                                            .executes(ModeCommand::executeSetMode)
+                                    )
+                            );
+                    dispatcher.register(autoharvest);
+                }
+        );
+    }
+
+    private static CompletableFuture<Suggestions> suggestModes(SuggestionsBuilder builder) {
+        for (String mode : MODE_NAMES) {
+            builder.suggest(mode);
+        }
+        return builder.buildFuture();
+    }
+
+    private static int executeToggle(CommandContext<FabricClientCommandSource> context) {
+        ModeManager.INSTANCE.toggle();
+        return 1;
+    }
+
+    private static int executeSetMode(CommandContext<FabricClientCommandSource> context) {
+        var player = MinecraftClient.getInstance().player;
+        String modeName = StringArgumentType.getString(context, "mode").toLowerCase();
+        switch (modeName) {
+            case "weed" -> {
+                ModeManager.INSTANCE.setCurrentMode(new WeedMode());
+                AutoHarvestConfig.getInstance().thecurrentMode = modeEnum.weed;
+                AutoHarvestConfig.save();
+                if (player != null) {
+                    player.sendMessage(Text.literal(Text.translatable("autoharvest.mode.switch").getString() + Text.translatable("autoharvest.mode.weed").getString()), false);
+                }
+                return 1;
+            }
+            case "plant" -> {
+                ModeManager.INSTANCE.setCurrentMode(new PlantMode());
+                AutoHarvestConfig.getInstance().thecurrentMode = modeEnum.plant;
+                AutoHarvestConfig.save();
+                if (player != null) {
+                    player.sendMessage(Text.literal(Text.translatable("autoharvest.mode.switch").getString() + Text.translatable("autoharvest.mode.plant").getString()), false);
+                }
+                return 1;
+            }
+            case "hoe" -> {
+                ModeManager.INSTANCE.setCurrentMode(new HoeMode());
+                AutoHarvestConfig.getInstance().thecurrentMode = modeEnum.hoe;
+                AutoHarvestConfig.save();
+                if (player != null) {
+                    player.sendMessage(Text.literal(Text.translatable("autoharvest.mode.switch").getString() + Text.translatable("autoharvest.mode.hoeing").getString()), false);
+                }
+                return 1;
+            }
+            case "bonemeal" -> {
+                ModeManager.INSTANCE.setCurrentMode(new BonemealMode());
+                AutoHarvestConfig.getInstance().thecurrentMode = modeEnum.bonemeal;
+                AutoHarvestConfig.save();
+                if (player != null) {
+                    player.sendMessage(Text.literal(Text.translatable("autoharvest.mode.switch").getString() + Text.translatable("autoharvest.mode.bonemeal").getString()), false);
+                }
+                return 1;
+            }
+            case "harvest" -> {
+                ModeManager.INSTANCE.setCurrentMode(new HarvestMode());
+                AutoHarvestConfig.getInstance().thecurrentMode = modeEnum.harvest;
+                AutoHarvestConfig.save();
+                if (player != null) {
+                    player.sendMessage(Text.literal(Text.translatable("autoharvest.mode.switch").getString() + Text.translatable("autoharvest.mode.harvest").getString()), false);
+                }
+                return 1;
+            }
+            case "farmer" -> {
+                ModeManager.INSTANCE.setCurrentMode(CompositeMode.farmer());
+                AutoHarvestConfig.getInstance().thecurrentMode = farmer;
+                AutoHarvestConfig.save();
+                if (player != null) {
+                    player.sendMessage(Text.literal(Text.translatable("autoharvest.mode.switch").getString() + CompositeMode.farmmerode_string()), false);
+                }
+                return 1;
+            }
+            case "feed" -> {
+                ModeManager.INSTANCE.setCurrentMode(new FeedMode());
+                AutoHarvestConfig.getInstance().thecurrentMode = feed;
+                AutoHarvestConfig.save();
+                if (player != null) {
+                    player.sendMessage(Text.literal(Text.translatable("autoharvest.mode.switch").getString() + Text.translatable("autoharvest.mode.feed").getString()), false);
+                }
+                return 1;
+            }
+            case "fishing" -> {
+                ModeManager.INSTANCE.setCurrentMode(new FishingMode());
+                AutoHarvestConfig.getInstance().thecurrentMode = fishing;
+                AutoHarvestConfig.save();
+                if (player != null) {
+                    player.sendMessage(Text.literal(Text.translatable("autoharvest.mode.switch").getString() + Text.translatable("autoharvest.mode.fishing").getString()), false);
+                }
+                return 1;
+            }
+        }
+
+        if (player != null) {
+            player.sendMessage(Text.translatable("autoharvest.mode.error"),
+                    false
+            );
+        }
+        return 0;
+    }
+}
