@@ -1,3 +1,4 @@
+[**English Version**](README_EN.md)
 # 自动收获
 
 适用于《我的世界》（Minecraft）的自动收割模组。

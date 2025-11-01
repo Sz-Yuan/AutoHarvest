@@ -1,3 +1,4 @@
+[**中文版描述**](README.md)
 # AutoHarvest
 
 An automatic farming mod for Minecraft.
