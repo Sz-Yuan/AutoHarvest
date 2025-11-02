@@ -37,7 +37,7 @@
   "autoharvest.mode.error": "§a[AutoHarvest] §c错误",
   "autoharvest.mode.fishing.error": "§a[AutoHarvest] §c浮标卡住，请检查位置！",
   "text.autoconfig.autoharvest.option.fishingReCastDelay": "自动钓鱼延迟",
-  "text.autoconfig.autoharvest.option.fishingReCastDelay.@Tooltip": "收回鱼竿与自动抛出鱼竿之间的间隔",
+  "text.autoconfig.autoharvest.option.fishingReCastDelay.@Tooltip": "收回鱼竿与自动抛出鱼竿之间的间隔,单位tick",
   "text.autoconfig.autoharvest.option.autoSwitchRod": "自动切换鱼竿",
   "text.autoconfig.autoharvest.option.autoSwitchRod.@Tooltip": "在钓鱼模式下自动切换至快捷栏的鱼竿"
 }
