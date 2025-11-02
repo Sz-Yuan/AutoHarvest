@@ -24,7 +24,7 @@ public class AutoHarvestConfig implements ConfigData {
     public boolean enableRefill = true;
 
     @ConfigEntry.Gui.Tooltip
-    public boolean autoSwitchFortuneTool = false;
+    public boolean autoSwitchFortuneTool = true;
 
     @ConfigEntry.BoundedDiscrete(min = 1, max = 60)
     @ConfigEntry.Gui.Tooltip
