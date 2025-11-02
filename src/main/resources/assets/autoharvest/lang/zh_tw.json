@@ -9,7 +9,7 @@
   "autoharvest.mode.fishing": "釣魚模式",
   "autoharvest.message.disabled": "§a[AutoHarvest] §fAutoHarvest 已關閉",
   "autoharvest.message.mode.enabled": "§a[AutoHarvest] §f已啟用模式：§e%s",
-  "category.autoharvest": "AutoHarvest",
+  "key.category.kite.autoharvest": "AutoHarvest",
   "key.autoharvest.toggle": "開關 AutoHarvest",
   "text.autoconfig.autoharvest.option.autoSwitchFortuneTool": "收割自動切換時運工具",
   "text.autoconfig.autoharvest.option.autoSwitchFortuneTool.@Tooltip": "收割模式下自動切換快捷欄中的時運工具",

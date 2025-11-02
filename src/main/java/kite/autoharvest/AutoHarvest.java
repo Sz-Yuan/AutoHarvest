@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 public class AutoHarvest implements ClientModInitializer {
     public static final String MOD_ID = "autoharvest";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-    public static final KeyBinding.Category AUTOHARVEST_CATEGORY = new KeyBinding.Category(Identifier.of("autoharvest", "category"));
+    public static final KeyBinding.Category AUTOHARVEST_CATEGORY = new KeyBinding.Category(Identifier.of("kite", "autoharvest"));
     public static final KeyBinding TOGGLE_KEY = new KeyBinding(
             "key.autoharvest.toggle",
             InputUtil.Type.KEYSYM,

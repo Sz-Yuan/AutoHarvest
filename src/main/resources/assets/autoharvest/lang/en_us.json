@@ -9,7 +9,7 @@
   "autoharvest.mode.fishing": "Fishing Mode",
   "autoharvest.message.disabled": "§a[AutoHarvest] §fAutoHarvest disabled",
   "autoharvest.message.mode.enabled": "§a[AutoHarvest] §fEnabled mode: §e%s",
-  "category.autoharvest": "AutoHarvest",
+  "key.category.kite.autoharvest": "AutoHarvest",
   "key.autoharvest.toggle": "Toggle AutoHarvest",
   "text.autoconfig.autoharvest.option.autoSwitchFortuneTool": "Auto-switch Fortune Tool on Harvest",
   "text.autoconfig.autoharvest.option.autoSwitchFortuneTool.@Tooltip": "Automatically switches to a Fortune-enchanted tool in your hotbar when in Harvest mode.",
