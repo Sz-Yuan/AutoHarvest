@@ -116,7 +116,7 @@ public class HarvestMode implements AutoMode {
     }
 
     private int findFortuneToolSlot(ClientPlayerEntity player) {
-        DynamicRegistryManager registryManager = player.getWorld().getRegistryManager();
+        DynamicRegistryManager registryManager = player.getEntityWorld().getRegistryManager();
         RegistryWrapper.Impl<Enchantment> enchantmentRegistry = registryManager.getOrThrow(RegistryKeys.ENCHANTMENT);
 
         for (int i = 0; i < 9; i++) {

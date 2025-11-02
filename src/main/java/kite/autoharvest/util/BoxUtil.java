@@ -12,7 +12,7 @@ public class BoxUtil {
     public static Vec3d getPlayerPos() {
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
         if (player == null) return null;
-        return player.getPos();
+        return player.getEntityPos();
     }
 
     public static ClientWorld getWorld() {
