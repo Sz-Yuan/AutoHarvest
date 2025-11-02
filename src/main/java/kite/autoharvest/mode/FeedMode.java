@@ -51,16 +51,10 @@ public class FeedMode implements AutoMode {
     }
 
     private boolean canBreed(Entity entity) {
-        try {
-            Method isBabyMethod = entity.getClass().getMethod("isBaby");
-            boolean isBaby = (boolean) isBabyMethod.invoke(entity);
-            if (isBaby) {
-                return false;
-            }
-        } catch (Exception e) {
-            return false;
+        if (entity instanceof AnimalEntity animal) {
+            return !animal.isBaby();
         }
-        return true;
+        return false;
     }
 
     @Override
