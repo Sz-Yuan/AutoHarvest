@@ -7,6 +7,8 @@
   "autoharvest.mode.switch": "已切換到：",
   "autoharvest.mode.weed": "除草模式",
   "autoharvest.mode.fishing": "釣魚模式",
+  "autoharvest.mode.farmer": "農夫模式",
+  "key.autoharvest.cycle": "切換模式［循環］",
   "autoharvest.message.disabled": "§a[AutoHarvest] §fAutoHarvest 已關閉",
   "autoharvest.message.mode.enabled": "§a[AutoHarvest] §f已啟用模式：§e%s",
   "key.category.kite.autoharvest": "AutoHarvest",
