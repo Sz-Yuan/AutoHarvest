@@ -3,6 +3,7 @@ package kite.autoharvest.util;
 import net.minecraft.block.Blocks;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -39,11 +40,12 @@ public final class WaterProximityChecker {
                 for (int dy = -1; dy <= 1; dy++) {
                     BlockPos checkPos = pos.add(dx, dy, dz);
                     var state = world.getBlockState(checkPos);
-                    if (state.getBlock() == Blocks.WATER) {
-                        FluidState fluid = state.getFluidState();
-                        if (fluid.isIn(FluidTags.WATER) && fluid.getLevel() == 8) {
-                            return false;
-                        }
+                    var fluidState = world.getFluidState(checkPos);
+                    if (fluidState.isIn(FluidTags.WATER) && fluidState.getLevel() == 8) {
+                        return false;
+                    }
+                    if (state.contains(Properties.WATERLOGGED) && state.get(Properties.WATERLOGGED)) {
+                        return false;
                     }
                 }
             }
