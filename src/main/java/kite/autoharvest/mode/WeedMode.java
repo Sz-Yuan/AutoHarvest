@@ -42,6 +42,8 @@ public class WeedMode implements AutoMode {
         WEED_BLOCKS.add(Blocks.ROSE_BUSH);
         WEED_BLOCKS.add(Blocks.PEONY);
         WEED_BLOCKS.add(Blocks.BUSH);
+        WEED_BLOCKS.add(Blocks.SHORT_DRY_GRASS);
+        WEED_BLOCKS.add(Blocks.TALL_DRY_GRASS);
     }
 
 
