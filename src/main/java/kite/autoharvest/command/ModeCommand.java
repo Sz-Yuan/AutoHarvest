@@ -11,8 +11,9 @@ import kite.autoharvest.mode.*;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.Component;
 
 import java.util.Arrays;
 import java.util.List;
@@ -56,7 +57,7 @@ public class ModeCommand {
     }
 
     private static int executeSetMode(CommandContext<FabricClientCommandSource> context) {
-        var player = MinecraftClient.getInstance().player;
+        LocalPlayer player = Minecraft.getInstance().player;
         String modeName = StringArgumentType.getString(context, "mode").toLowerCase();
         switch (modeName) {
             case "weed" -> {
@@ -64,7 +65,7 @@ public class ModeCommand {
                 AutoHarvestConfig.getInstance().thecurrentMode = modeEnum.weed;
                 AutoHarvestConfig.save();
                 if (player != null) {
-                    player.sendMessage(Text.literal(Text.translatable("autoharvest.mode.switch").getString() + Text.translatable("autoharvest.mode.weed").getString()), false);
+                    player.displayClientMessage(Component.literal(Component.translatable("autoharvest.mode.switch").getString() + Component.translatable("autoharvest.mode.weed").getString()), false);
                 }
                 return 1;
             }
@@ -73,7 +74,7 @@ public class ModeCommand {
                 AutoHarvestConfig.getInstance().thecurrentMode = modeEnum.plant;
                 AutoHarvestConfig.save();
                 if (player != null) {
-                    player.sendMessage(Text.literal(Text.translatable("autoharvest.mode.switch").getString() + Text.translatable("autoharvest.mode.plant").getString()), false);
+                    player.displayClientMessage(Component.literal(Component.translatable("autoharvest.mode.switch").getString() + Component.translatable("autoharvest.mode.plant").getString()), false);
                 }
                 return 1;
             }
@@ -82,7 +83,7 @@ public class ModeCommand {
                 AutoHarvestConfig.getInstance().thecurrentMode = modeEnum.hoe;
                 AutoHarvestConfig.save();
                 if (player != null) {
-                    player.sendMessage(Text.literal(Text.translatable("autoharvest.mode.switch").getString() + Text.translatable("autoharvest.mode.hoeing").getString()), false);
+                    player.displayClientMessage(Component.literal(Component.translatable("autoharvest.mode.switch").getString() + Component.translatable("autoharvest.mode.hoeing").getString()), false);
                 }
                 return 1;
             }
@@ -91,7 +92,7 @@ public class ModeCommand {
                 AutoHarvestConfig.getInstance().thecurrentMode = modeEnum.bonemeal;
                 AutoHarvestConfig.save();
                 if (player != null) {
-                    player.sendMessage(Text.literal(Text.translatable("autoharvest.mode.switch").getString() + Text.translatable("autoharvest.mode.bonemeal").getString()), false);
+                    player.displayClientMessage(Component.literal(Component.translatable("autoharvest.mode.switch").getString() + Component.translatable("autoharvest.mode.bonemeal").getString()), false);
                 }
                 return 1;
             }
@@ -100,7 +101,7 @@ public class ModeCommand {
                 AutoHarvestConfig.getInstance().thecurrentMode = modeEnum.harvest;
                 AutoHarvestConfig.save();
                 if (player != null) {
-                    player.sendMessage(Text.literal(Text.translatable("autoharvest.mode.switch").getString() + Text.translatable("autoharvest.mode.harvest").getString()), false);
+                    player.displayClientMessage(Component.literal(Component.translatable("autoharvest.mode.switch").getString() + Component.translatable("autoharvest.mode.harvest").getString()), false);
                 }
                 return 1;
             }
@@ -109,7 +110,7 @@ public class ModeCommand {
                 AutoHarvestConfig.getInstance().thecurrentMode = farmer;
                 AutoHarvestConfig.save();
                 if (player != null) {
-                    player.sendMessage(Text.literal(Text.translatable("autoharvest.mode.switch").getString() + CompositeMode.farmmerode_string()), false);
+                    player.displayClientMessage(Component.literal(Component.translatable("autoharvest.mode.switch").getString() + CompositeMode.farmmerode_string()), false);
                 }
                 return 1;
             }
@@ -118,7 +119,7 @@ public class ModeCommand {
                 AutoHarvestConfig.getInstance().thecurrentMode = feed;
                 AutoHarvestConfig.save();
                 if (player != null) {
-                    player.sendMessage(Text.literal(Text.translatable("autoharvest.mode.switch").getString() + Text.translatable("autoharvest.mode.feed").getString()), false);
+                    player.displayClientMessage(Component.literal(Component.translatable("autoharvest.mode.switch").getString() + Component.translatable("autoharvest.mode.feed").getString()), false);
                 }
                 return 1;
             }
@@ -127,14 +128,14 @@ public class ModeCommand {
                 AutoHarvestConfig.getInstance().thecurrentMode = fishing;
                 AutoHarvestConfig.save();
                 if (player != null) {
-                    player.sendMessage(Text.literal(Text.translatable("autoharvest.mode.switch").getString() + Text.translatable("autoharvest.mode.fishing").getString()), false);
+                    player.displayClientMessage(Component.literal(Component.translatable("autoharvest.mode.switch").getString() + Component.translatable("autoharvest.mode.fishing").getString()), false);
                 }
                 return 1;
             }
         }
 
         if (player != null) {
-            player.sendMessage(Text.translatable("autoharvest.mode.error"),
+            player.displayClientMessage(Component.translatable("autoharvest.mode.error"),
                     false
             );
         }

@@ -1,42 +1,43 @@
 package kite.autoharvest.util;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 
 public final class InteractionHelper {
 
     private InteractionHelper() {
     }
 
-    public static void interactBlock(ClientPlayerEntity player, BlockPos blockPos, Hand hand, Direction side) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client == null || client.interactionManager == null) return;
-        Vec3d hitPos = blockPos.toCenterPos();
+    public static void interactBlock(LocalPlayer player, BlockPos blockPos, InteractionHand hand, Direction side) {
+        Minecraft client = Minecraft.getInstance();
+        if (client.gameMode == null) return;
+        Vec3 hitPos = blockPos.getCenter();
         BlockHitResult hitResult = new BlockHitResult(hitPos, side, blockPos, false);
-        client.interactionManager.interactBlock(player, hand, hitResult);
+        client.gameMode.useItemOn(player, hand, hitResult);
     }
 
     public static void breakBlock(BlockPos blockPos, Direction side) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client == null || client.interactionManager == null) return;
-        client.interactionManager.attackBlock(blockPos, side);
+        Minecraft client = Minecraft.getInstance();
+        if (client.gameMode == null) return;
+        client.gameMode.startDestroyBlock(blockPos, side);
     }
 
-    public static void interactEntity(ClientPlayerEntity player, Entity target, Hand hand) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client == null || client.interactionManager == null) return;
-        client.interactionManager.interactEntity(player, target, hand);
+    public static void interactEntity(LocalPlayer player, Entity target, InteractionHand hand) {
+        Minecraft client = Minecraft.getInstance();
+        if (client.gameMode == null) return;
+        client.gameMode.interact(player, target, hand);
     }
-    public static void interactItem(ClientPlayerEntity player, Hand hand) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client.interactionManager != null) {
-            client.interactionManager.interactItem(player, hand);
+    public static void interactItem(LocalPlayer player, InteractionHand hand) {
+        Minecraft client = Minecraft.getInstance();
+        if (client.gameMode != null) {
+            client.gameMode.useItem(player, hand);
         }
     }
 }

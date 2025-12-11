@@ -1,12 +1,12 @@
 package kite.autoharvest.util;
 
-import net.minecraft.block.Blocks;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.registry.tag.FluidTags;
-import net.minecraft.state.property.Properties;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.tags.FluidTags;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.material.FluidState;
 
 public final class WaterProximityChecker {
 
@@ -20,13 +20,13 @@ public final class WaterProximityChecker {
             Direction.EAST
     };
 
-    public static boolean isAdjacentToSourceWaterHorizontally(World world, BlockPos pos) {
+    public static boolean isAdjacentToSourceWaterHorizontally(Level world, BlockPos pos) {
         for (Direction dir : HORIZONTAL_DIRECTIONS) {
-            BlockPos offsetPos = pos.offset(dir);
+            BlockPos offsetPos = pos.relative(dir);
             var state = world.getBlockState(offsetPos);
             if (state.getBlock() == Blocks.WATER) {
                 FluidState fluid = state.getFluidState();
-                if (fluid.isIn(FluidTags.WATER) && fluid.getLevel() == 8) {
+                if (fluid.is(net.minecraft.tags.FluidTags.WATER) && fluid.isSource()) {
                     return true;
                 }
             }
@@ -34,17 +34,17 @@ public final class WaterProximityChecker {
         return false;
     }
 
-    public static boolean isWithinHydrationRange(World world, BlockPos pos) {
+    public static boolean isWithinHydrationRange(Level world, BlockPos pos) {
         for (int dx = -4; dx <= 4; dx++) {
             for (int dz = -4; dz <= 4; dz++) {
                 for (int dy = -1; dy <= 1; dy++) {
-                    BlockPos checkPos = pos.add(dx, dy, dz);
+                    BlockPos checkPos = pos.offset(dx, dy, dz);
                     var state = world.getBlockState(checkPos);
                     var fluidState = world.getFluidState(checkPos);
-                    if (fluidState.isIn(FluidTags.WATER) && fluidState.getLevel() == 8) {
+                    if (fluidState.is(FluidTags.WATER) && fluidState.isSource()) {
                         return false;
                     }
-                    if (state.contains(Properties.WATERLOGGED) && state.get(Properties.WATERLOGGED)) {
+                    if (state.hasProperty(BlockStateProperties.WATERLOGGED) && state.getValue(BlockStateProperties.WATERLOGGED)) {
                         return false;
                     }
                 }

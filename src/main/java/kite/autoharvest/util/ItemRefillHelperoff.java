@@ -1,39 +1,39 @@
 package kite.autoharvest.util;
 
 import kite.autoharvest.util.whitelist.itemWhiteList;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.item.ItemStack;
 
 public class ItemRefillHelperoff {
 
     public static void refillOffHand() {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client == null) return;
+        Minecraft client = Minecraft.getInstance();
 
         client.execute(() -> doRefillOffHand(client));
     }
 
-    private static void doRefillOffHand(MinecraftClient client) {
-        if (client.player == null || client.world == null) return;
+    private static void doRefillOffHand(Minecraft client) {
+        if (client.player == null || client.level == null) return;
 
-        if (client.currentScreen != null && !(client.currentScreen instanceof InventoryScreen)) {
+        if (client.screen != null && !(client.screen instanceof InventoryScreen)) {
             return;
         }
 
-        ClientPlayerEntity player = client.player;
-        PlayerInventory inv = player.getInventory();
+        LocalPlayer player = client.player;
+        Inventory inv = player.getInventory();
 
         refillOffHand(player, inv);
     }
 
-    private static void refillOffHand(ClientPlayerEntity player, PlayerInventory inv) {
+    private static void refillOffHand(LocalPlayer player, Inventory inv) {
         var WHITELIST = itemWhiteList.WHITELIST;
 
-        ItemStack offHandStack = player.getOffHandStack();
+        ItemStack offHandStack = player.getOffhandItem();
 
         if (offHandStack.isEmpty() || !WHITELIST.contains(offHandStack.getItem())) {
             return;
@@ -42,7 +42,7 @@ public class ItemRefillHelperoff {
         int sourcePlayerSlot = findMatchingStackInInventory(inv, offHandStack);
         if (sourcePlayerSlot == -1) return;
 
-        var handler = player.currentScreenHandler;
+        var handler = player.containerMenu;
 
         final int OFF_HAND_SCREEN_SLOT = 45;
 
@@ -53,37 +53,37 @@ public class ItemRefillHelperoff {
 
         clickSlot(handler, screenSourceSlot);
 
-        ItemStack cursorAfterPickup = handler.getCursorStack();
+        ItemStack cursorAfterPickup = handler.getCarried();
         if (cursorAfterPickup.isEmpty()) {
             return;
         }
 
         clickSlot(handler, OFF_HAND_SCREEN_SLOT);
 
-        if (!handler.getCursorStack().isEmpty()) {
+        if (!handler.getCarried().isEmpty()) {
             clickSlot(handler, screenSourceSlot);
         }
     }
 
-    private static void clickSlot(net.minecraft.screen.ScreenHandler handler, int slotIndex) {
-        MinecraftClient client = MinecraftClient.getInstance();
+    private static void clickSlot(AbstractContainerMenu handler, int slotIndex) {
+        Minecraft client = Minecraft.getInstance();
         if (client.player == null) return;
 
-        if (client.interactionManager != null) {
-            client.interactionManager.clickSlot(
-                    handler.syncId,
+        if (client.gameMode != null) {
+            client.gameMode.handleInventoryMouseClick(
+                    handler.containerId,
                     slotIndex,
                     0,
-                    SlotActionType.PICKUP,
+                    ClickType.PICKUP,
                     client.player
             );
         }
     }
 
-    private static int findMatchingStackInInventory(PlayerInventory inv, ItemStack targetStack) {
+    private static int findMatchingStackInInventory(Inventory inv, ItemStack targetStack) {
         for (int i = 0; i < 36; i++) {
-            ItemStack stack = inv.getStack(i);
-            if (!stack.isEmpty() && ItemStack.areItemsEqual(stack, targetStack)) {
+            ItemStack stack = inv.getItem(i);
+            if (!stack.isEmpty() && ItemStack.isSameItem(stack, targetStack)) {
                 return i;
             }
         }

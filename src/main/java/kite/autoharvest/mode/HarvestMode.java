@@ -3,26 +3,28 @@ package kite.autoharvest.mode;
 import kite.autoharvest.config.AutoHarvestConfig;
 import kite.autoharvest.util.BoxUtil;
 import kite.autoharvest.util.InteractionHelper;
-import net.minecraft.block.*;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.ItemEnchantmentsComponent;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.item.*;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.tag.ItemTags;
-import net.minecraft.state.property.Properties;
-import net.minecraft.text.Text;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.Set;
 
@@ -40,19 +42,19 @@ public class HarvestMode implements AutoMode {
 
     @Override
     public void tick() {
-        ClientWorld world = BoxUtil.getWorld();
-        ClientPlayerEntity player = BoxUtil.getPlayer();
+        ClientLevel world = BoxUtil.getWorld();
+        LocalPlayer player = BoxUtil.getPlayer();
         if (world == null || player == null) return;
 
-        Vec3d playerPos = BoxUtil.getPlayerPos();
+        Vec3 playerPos = BoxUtil.getPlayerPos();
         if (playerPos == null) return;
 
         double radius = AutoHarvestConfig.getInstance().getRadius();
-        Box searchBox = BoxUtil.createSearchBox(playerPos, radius);
+        AABB searchBox = BoxUtil.createSearchBox(playerPos, radius);
         int radiusInt = (int) Math.ceil(radius);
 
-        for (BlockPos pos : BlockPos.iterateOutwards(BlockPos.ofFloored(playerPos), radiusInt, radiusInt, radiusInt)) {
-            if (!searchBox.contains(pos.toCenterPos())) continue;
+        for (BlockPos pos : BlockPos.withinManhattan(BlockPos.containing(playerPos), radiusInt, radiusInt, radiusInt)) {
+            if (!searchBox.contains(pos.getCenter())) continue;
             if (BoxUtil.isInSphere(pos, playerPos, radius)) continue;
 
             BlockState state = world.getBlockState(pos);
@@ -61,12 +63,12 @@ public class HarvestMode implements AutoMode {
             if (!HARVEST_CROPS.contains(block)) continue;
 
             if (block == Blocks.SUGAR_CANE) {
-                if (world.getBlockState(pos.down()).isOf(Blocks.SUGAR_CANE)) {
+                if (world.getBlockState(pos.below()).is(Blocks.SUGAR_CANE)) {
                     continue;
                 }
-                BlockPos secondpos = pos.up();
-                if (world.getBlockState(secondpos).isOf(Blocks.SUGAR_CANE)) {
-                    if (tryHarvest(player, pos.up())) {
+                BlockPos secondpos = pos.above();
+                if (world.getBlockState(secondpos).is(Blocks.SUGAR_CANE)) {
+                    if (tryHarvest(player, pos.above())) {
                         return;
                     }
                 }
@@ -77,7 +79,7 @@ public class HarvestMode implements AutoMode {
                         player.getInventory().setSelectedSlot(fortuneSlot);
                     }
                 }
-                InteractionHelper.interactBlock(player, pos, Hand.MAIN_HAND, Direction.UP);
+                InteractionHelper.interactBlock(player, pos, InteractionHand.MAIN_HAND, Direction.UP);
                 return;
             } else {
                 if (isNotFullyGrown(state, block)) continue;
@@ -90,21 +92,21 @@ public class HarvestMode implements AutoMode {
 
     private boolean isNotFullyGrown(BlockState state, Block block) {
         if (block == Blocks.NETHER_WART) {
-            return state.get(Properties.AGE_3) < 3;
+            return state.getValue(BlockStateProperties.AGE_3) < 3;
         } else if (block == Blocks.SWEET_BERRY_BUSH) {
-            return state.get(Properties.AGE_3) < 2;
+            return state.getValue(BlockStateProperties.AGE_3) < 2;
         } else if (block instanceof CropBlock) {
             if (block == Blocks.BEETROOTS) {
-                return state.get(Properties.AGE_3) < 3;
+                return state.getValue(BlockStateProperties.AGE_3) < 3;
             } else {
-                return state.get(Properties.AGE_7) < 7;
+                return state.getValue(BlockStateProperties.AGE_7) < 7;
             }
         }
         return false;
     }
 
 
-    private boolean tryHarvest(ClientPlayerEntity player, BlockPos pos) {
+    private boolean tryHarvest(LocalPlayer player, BlockPos pos) {
         if (AutoHarvestConfig.autoSwitchFortuneTool()) {
             int fortuneSlot = findFortuneToolSlot(player);
             if (fortuneSlot != -1) {
@@ -115,21 +117,22 @@ public class HarvestMode implements AutoMode {
         return true;
     }
 
-    private int findFortuneToolSlot(ClientPlayerEntity player) {
-        DynamicRegistryManager registryManager = player.getEntityWorld().getRegistryManager();
-        RegistryWrapper.Impl<Enchantment> enchantmentRegistry = registryManager.getOrThrow(RegistryKeys.ENCHANTMENT);
+    private int findFortuneToolSlot(LocalPlayer player) {
+        Holder<Enchantment> fortuneHolder = player.level()
+                .registryAccess()
+                .lookupOrThrow(Registries.ENCHANTMENT)
+                .getOrThrow(Enchantments.FORTUNE);
 
         for (int i = 0; i < 9; i++) {
-            ItemStack stack = player.getInventory().getStack(i);
+            ItemStack stack = player.getInventory().getItem(i);
             if (stack.isEmpty()) continue;
 
             Item item = stack.getItem();
             if (isHarvestTool(item)) {
-                ItemEnchantmentsComponent enchantments =
-                        stack.getOrDefault(DataComponentTypes.ENCHANTMENTS, ItemEnchantmentsComponent.DEFAULT);
+                ItemEnchantments enchantments =
+                        stack.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
 
-                RegistryEntry<Enchantment> fortuneEntry = enchantmentRegistry.getOrThrow(Enchantments.FORTUNE);
-                int fortuneLevel = enchantments.getLevel(fortuneEntry);
+                int fortuneLevel = enchantments.getLevel(fortuneHolder);
                 if (fortuneLevel >= 1) {
                     return i;
                 }
@@ -138,18 +141,19 @@ public class HarvestMode implements AutoMode {
         return -1;
     }
 
+
     private boolean isHarvestTool(Item item) {
         if (item == null) return false;
         ItemStack stack = new ItemStack(item);
-        return stack.isIn(ItemTags.AXES) ||
-                stack.isIn(ItemTags.SHOVELS) ||
-                stack.isIn(ItemTags.HOES) ||
-                stack.isIn(ItemTags.PICKAXES);
+        return stack.is(ItemTags.AXES) ||
+                stack.is(ItemTags.SHOVELS) ||
+                stack.is(ItemTags.HOES) ||
+                stack.is(ItemTags.PICKAXES);
     }
 
     @Override
     public String getName() {
-        return Text.translatable("autoharvest.mode.harvest").getString();
+        return Component.translatable("autoharvest.mode.harvest").getString();
     }
 
     @Override

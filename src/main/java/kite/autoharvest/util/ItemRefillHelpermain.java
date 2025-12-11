@@ -1,38 +1,39 @@
 package kite.autoharvest.util;
 
 import kite.autoharvest.util.whitelist.itemWhiteList;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.item.ItemStack;
 
 public class ItemRefillHelpermain {
     public static void refillHands() {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client == null) return;
+        Minecraft client = Minecraft.getInstance();
 
         client.execute(() -> doRefillHands(client));
     }
 
-    private static void doRefillHands(MinecraftClient client) {
-        if (client.player == null || client.world == null) return;
+    private static void doRefillHands(Minecraft client) {
+        if (client.player == null || client.level == null) return;
 
-        if (client.currentScreen != null && !(client.currentScreen instanceof InventoryScreen)) {
+        if (client.screen != null && !(client.screen instanceof InventoryScreen)) {
             return;
         }
 
-        ClientPlayerEntity player = client.player;
-        PlayerInventory inv = player.getInventory();
+        LocalPlayer player = client.player;
+        Inventory inv = player.getInventory();
 
         refillHand(player, inv);
     }
 
-    private static void refillHand(ClientPlayerEntity player, PlayerInventory inv) {
+    private static void refillHand(LocalPlayer player, Inventory inv) {
         var WHITELIST = itemWhiteList.WHITELIST;
         int hotbarSlot = inv.getSelectedSlot();
-        ItemStack currentStack = player.getMainHandStack();
+        ItemStack currentStack = player.getMainHandItem();
 
         if (currentStack.isEmpty() || !WHITELIST.contains(currentStack.getItem())) {
             return;
@@ -41,7 +42,7 @@ public class ItemRefillHelpermain {
         int sourcePlayerSlot = findMatchingStackInInventory(inv, currentStack, hotbarSlot);
         if (sourcePlayerSlot == -1) return;
 
-        var handler = player.currentScreenHandler;
+        var handler = player.containerMenu;
 
         int screenHotbarSlot = hotbarSlot < 9 ? hotbarSlot + 36 : hotbarSlot; // 快捷栏 0-8 → GUI 36-44
 
@@ -52,38 +53,38 @@ public class ItemRefillHelpermain {
 
         clickSlot(handler, screenSourceSlot);
 
-        ItemStack cursorAfterPickup = handler.getCursorStack();
+        ItemStack cursorAfterPickup = handler.getCarried();
         if (cursorAfterPickup.isEmpty()) {
             return;
         }
 
         clickSlot(handler, screenHotbarSlot);
 
-        if (!handler.getCursorStack().isEmpty()) {
+        if (!handler.getCarried().isEmpty()) {
             clickSlot(handler, screenSourceSlot);
         }
     }
 
-    private static void clickSlot(net.minecraft.screen.ScreenHandler handler, int slotIndex) {
-        MinecraftClient client = MinecraftClient.getInstance();
+    private static void clickSlot(AbstractContainerMenu handler, int slotIndex) {
+        Minecraft client = Minecraft.getInstance();
         if (client.player == null) return;
 
-        if (client.interactionManager != null) {
-            client.interactionManager.clickSlot(
-                    handler.syncId,
+        if (client.gameMode != null) {
+            client.gameMode.handleInventoryMouseClick(
+                    handler.containerId,
                     slotIndex,
                     0,
-                    SlotActionType.PICKUP,
+                    ClickType.PICKUP,
                     client.player
             );
         }
     }
 
-    private static int findMatchingStackInInventory(PlayerInventory inv, ItemStack targetStack, int excludePlayerSlot) {
+    private static int findMatchingStackInInventory(Inventory inv, ItemStack targetStack, int excludePlayerSlot) {
         for (int i = 0; i < 36; i++) {
             if (i == excludePlayerSlot) continue;
-            ItemStack stack = inv.getStack(i);
-            if (!stack.isEmpty() && ItemStack.areItemsEqual(stack, targetStack)) {
+            ItemStack stack = inv.getItem(i);
+            if (!stack.isEmpty() && ItemStack.isSameItem(stack, targetStack)) {
                 return i;
             }
         }

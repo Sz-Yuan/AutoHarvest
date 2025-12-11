@@ -3,15 +3,15 @@ package kite.autoharvest.mode;
 import kite.autoharvest.config.AutoHarvestConfig;
 import kite.autoharvest.util.BoxUtil;
 import kite.autoharvest.util.InteractionHelper;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -49,25 +49,25 @@ public class WeedMode implements AutoMode {
 
     @Override
     public void tick() {
-        ClientWorld world = BoxUtil.getWorld();
+        ClientLevel world = BoxUtil.getWorld();
         if (world == null) return;
 
-        Vec3d playerPos = BoxUtil.getPlayerPos();
+        Vec3 playerPos = BoxUtil.getPlayerPos();
         if (playerPos == null) return;
 
         double radius = AutoHarvestConfig.radius();
-        Box searchBox = BoxUtil.createSearchBox(playerPos, radius);
+        AABB searchBox = BoxUtil.createSearchBox(playerPos, radius);
 
         // 遍历区域
         int radiusInt = (int) Math.ceil(radius);
-        for (BlockPos blockPos : BlockPos.iterateOutwards(BlockPos.ofFloored(playerPos), radiusInt, radiusInt, radiusInt)) {
-            if (!searchBox.contains(blockPos.toCenterPos())) continue;
+        for (BlockPos blockPos : BlockPos.withinManhattan(BlockPos.containing(playerPos), radiusInt, radiusInt, radiusInt)) {
+            if (!searchBox.contains(blockPos.getCenter())) continue;
             if (BoxUtil.isInSphere(blockPos, playerPos, radius)) continue;
 
-            MinecraftClient client = MinecraftClient.getInstance();
+            Minecraft client = Minecraft.getInstance();
             Block block = world.getBlockState(blockPos).getBlock();
             if (WEED_BLOCKS.contains(block)) {
-                if (client.interactionManager != null) {
+                if (client.gameMode != null) {
                     InteractionHelper.breakBlock(blockPos, Direction.UP);
                     break;
                 }
@@ -77,7 +77,7 @@ public class WeedMode implements AutoMode {
 
     @Override
     public String getName() {
-        return Text.translatable("autoharvest.mode.weed").getString();
+        return Component.translatable("autoharvest.mode.weed").getString();
     }
 
     @Override

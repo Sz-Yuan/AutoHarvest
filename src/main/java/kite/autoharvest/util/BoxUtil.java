@@ -1,36 +1,36 @@
 package kite.autoharvest.util;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 public class BoxUtil {
 
-    public static Vec3d getPlayerPos() {
-        ClientPlayerEntity player = MinecraftClient.getInstance().player;
+    public static Vec3 getPlayerPos() {
+        LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return null;
-        return player.getEntityPos();
+        return player.position();
     }
 
-    public static ClientWorld getWorld() {
-        return MinecraftClient.getInstance().world;
+    public static ClientLevel getWorld() {
+        return Minecraft.getInstance().level;
     }
 
-    public static ClientPlayerEntity getPlayer() {
-        return MinecraftClient.getInstance().player;
+    public static LocalPlayer getPlayer() {
+        return Minecraft.getInstance().player;
     }
 
-    public static Box createSearchBox(Vec3d center, double radius) {
-        return new Box(
+    public static AABB createSearchBox(Vec3 center, double radius) {
+        return new AABB(
                 center.x - radius, center.y - radius, center.z - radius,
                 center.x + radius, center.y + radius, center.z + radius
         );
     }
 
-    public static boolean isInSphere(BlockPos pos, Vec3d center, double radius) {
-        return !center.isInRange(pos.toCenterPos(), radius);
+    public static boolean isInSphere(BlockPos pos, Vec3 center, double radius) {
+        return !center.closerThan(pos.getCenter(), radius);
     }
 }

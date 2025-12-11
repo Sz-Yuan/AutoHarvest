@@ -1,8 +1,8 @@
 package kite.autoharvest.util.whitelist;
 
 import kite.autoharvest.mode.animal.Animals;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 
 import java.util.Arrays;
 import java.util.Collections;

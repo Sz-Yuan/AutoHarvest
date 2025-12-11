@@ -2,8 +2,8 @@ package kite.autoharvest.manager;
 
 import kite.autoharvest.config.AutoHarvestConfig;
 import kite.autoharvest.mode.AutoMode;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 
 public enum ModeManager {
     INSTANCE;
@@ -27,9 +27,9 @@ public enum ModeManager {
         this.currentMode = mode;
         this.cachedMode = mode;
 
-        if (MinecraftClient.getInstance().player != null) {
-            MinecraftClient.getInstance().player.sendMessage(
-                    Text.translatable("autoharvest.message.mode.enabled", mode.getName()),
+        if (Minecraft.getInstance().player != null) {
+            Minecraft.getInstance().player.displayClientMessage(
+                    Component.translatable("autoharvest.message.mode.enabled", mode.getName()),
                     false
             );
         }
@@ -38,9 +38,9 @@ public enum ModeManager {
     public void clearMode() {
         if (this.currentMode != null) {
             this.currentMode.onDisable();
-            if (MinecraftClient.getInstance().player != null) {
-                MinecraftClient.getInstance().player.sendMessage(
-                        Text.translatable("autoharvest.message.disabled"),
+            if (Minecraft.getInstance().player != null) {
+                Minecraft.getInstance().player.displayClientMessage(
+                        Component.translatable("autoharvest.message.disabled"),
                         false
                 );
             }

@@ -2,12 +2,12 @@ package kite.autoharvest.mode;
 
 import kite.autoharvest.config.AutoHarvestConfig;
 import kite.autoharvest.util.InteractionHelper;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.entity.projectile.FishingBobberEntity;
-import net.minecraft.item.Items;
-import net.minecraft.text.Text;
-import net.minecraft.util.Hand;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.projectile.FishingHook;
+import net.minecraft.world.item.Items;
 
 public class FishingMode implements AutoMode {
 
@@ -28,12 +28,12 @@ public class FishingMode implements AutoMode {
 
     @Override
     public void tick() {
-        ClientPlayerEntity player = MinecraftClient.getInstance().player;
+        LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) {
             resetAllState();
             return;
         }
-        Hand rodHand = getFishingRodHand(player);
+        InteractionHand rodHand = getFishingRodHand(player);
         if (rodHand == null) {
             int rodSlot = findFishingRodSlot(player);
             if (rodSlot != -1) {
@@ -48,7 +48,7 @@ public class FishingMode implements AutoMode {
             }
         }
 
-        FishingBobberEntity bobber = player.fishHook;
+        FishingHook bobber = player.fishing;
         long currentTime = getCurrentWorldTime();
 
         if (fishBitesAt != 0) {
@@ -90,16 +90,16 @@ public class FishingMode implements AutoMode {
         }
     }
 
-    private int findFishingRodSlot(ClientPlayerEntity player) {
+    private int findFishingRodSlot(LocalPlayer player) {
         for (int i = 0; i < 9; i++) {
-            if (player.getInventory().getStack(i).isOf(Items.FISHING_ROD)) {
+            if (player.getInventory().getItem(i).is(Items.FISHING_ROD)) {
                 return i;
             }
         }
         return -1;
     }
 
-    private void updateStationaryState(FishingBobberEntity bobber, boolean allowStuckDetection, long currentTime) {
+    private void updateStationaryState(FishingHook bobber, boolean allowStuckDetection, long currentTime) {
         double x = bobber.getX();
         double y = bobber.getY();
         double z = bobber.getZ();
@@ -123,20 +123,20 @@ public class FishingMode implements AutoMode {
         }
     }
 
-    private void checkAndNotifyStuck(ClientPlayerEntity player, long currentTime) {
+    private void checkAndNotifyStuck(LocalPlayer player, long currentTime) {
         if (firstStuckTime == -1) {
             return;
         }
         if ((currentTime - firstStuckTime) % REPEAT_MESSAGE_INTERVAL == 0) {
             if (currentTime > firstStuckTime) {
-                player.sendMessage(Text.translatable("autoharvest.mode.fishing.error"), true);
+                player.displayClientMessage(Component.translatable("autoharvest.mode.fishing.error"), true);
             }
         }
     }
 
-    private boolean isFishBites(FishingBobberEntity bobber, double baselineY) {
-        double dx = bobber.getX() - bobber.lastX;
-        double dz = bobber.getZ() - bobber.lastZ;
+    private boolean isFishBites(FishingHook bobber, double baselineY) {
+        double dx = bobber.getX() - bobber.xo;
+        double dz = bobber.getZ() - bobber.zo;
         double currentY = bobber.getY();
 
         boolean horizontalStill = Math.abs(dx) < HORIZONTAL_MOVEMENT_THRESHOLD
@@ -156,23 +156,23 @@ public class FishingMode implements AutoMode {
     }
 
     private long getCurrentWorldTime() {
-        var world = MinecraftClient.getInstance().world;
-        return world != null ? world.getTime() : 0L;
+        var world = Minecraft.getInstance().level;
+        return world != null ? world.getGameTime() : 0L;
     }
 
-    private Hand getFishingRodHand(ClientPlayerEntity player) {
-        if (player.getMainHandStack().isOf(Items.FISHING_ROD)) {
-            return Hand.MAIN_HAND;
+    private InteractionHand getFishingRodHand(LocalPlayer player) {
+        if (player.getMainHandItem().is(Items.FISHING_ROD)) {
+            return InteractionHand.MAIN_HAND;
         }
-        if (player.getOffHandStack().isOf(Items.FISHING_ROD)) {
-            return Hand.OFF_HAND;
+        if (player.getOffhandItem().is(Items.FISHING_ROD)) {
+            return InteractionHand.OFF_HAND;
         }
         return null;
     }
 
     @Override
     public String getName() {
-        return Text.translatable("autoharvest.mode.fishing").getString();
+        return Component.translatable("autoharvest.mode.fishing").getString();
     }
 
     @Override

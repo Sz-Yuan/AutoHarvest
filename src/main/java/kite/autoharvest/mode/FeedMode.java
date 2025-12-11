@@ -3,19 +3,19 @@ package kite.autoharvest.mode;
 import kite.autoharvest.config.AutoHarvestConfig;
 import kite.autoharvest.mode.animal.Animals;
 import kite.autoharvest.util.*;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.passive.*;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.text.Text;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.sheep.Sheep;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
-import java.lang.reflect.Method;
 import java.util.*;
 
 public class FeedMode implements AutoMode {
@@ -32,13 +32,13 @@ public class FeedMode implements AutoMode {
     private static final long CLEANUP_INTERVAL_MS = 5_000L;
 
     private boolean isOnCooldown(Entity entity) {
-        Long lastInteract = INTERACT_COOLDOWN.get(entity.getUuid());
+        Long lastInteract = INTERACT_COOLDOWN.get(entity.getUUID());
         if (lastInteract == null) return false;
         return (System.currentTimeMillis() - lastInteract) < COOLDOWN_MS();
     }
 
     private void markAsInteracted(Entity entity) {
-        INTERACT_COOLDOWN.put(entity.getUuid(), System.currentTimeMillis());
+        INTERACT_COOLDOWN.put(entity.getUUID(), System.currentTimeMillis());
     }
 
     private void cleanupCooldownCache() {
@@ -51,7 +51,7 @@ public class FeedMode implements AutoMode {
     }
 
     private boolean canBreed(Entity entity) {
-        if (entity instanceof AnimalEntity animal){
+        if (entity instanceof Animal animal) {
             return !animal.isBaby();
         }
         return false;
@@ -62,27 +62,27 @@ public class FeedMode implements AutoMode {
         var BREEDABLE_WHITELIST = Animals.BREEDABLE_WHITELIST;
         cleanupCooldownCache();
 
-        ClientWorld world = BoxUtil.getWorld();
-        ClientPlayerEntity player = BoxUtil.getPlayer();
+        ClientLevel world = BoxUtil.getWorld();
+        LocalPlayer player = BoxUtil.getPlayer();
         if (world == null || player == null) return;
 
-        Vec3d playerPos = BoxUtil.getPlayerPos();
+        Vec3 playerPos = BoxUtil.getPlayerPos();
         if (playerPos == null) return;
-        ItemStack mainHand = player.getMainHandStack();
-        ItemStack offHand = player.getOffHandStack();
-        boolean holdingShears = mainHand.isOf(Items.SHEARS) || offHand.isOf(Items.SHEARS);
+        ItemStack mainHand = player.getMainHandItem();
+        ItemStack offHand = player.getOffhandItem();
+        boolean holdingShears = mainHand.is(Items.SHEARS) || offHand.is(Items.SHEARS);
 
         // 如果手持剪刀：仅剪羊毛，跳过喂食
         if (holdingShears) {
             double radius = AutoHarvestConfig.getInstance().getRadius();
-            Box searchBox = BoxUtil.createSearchBox(playerPos, radius);
-            List<Entity> sheepList = world.getOtherEntities(player, searchBox, entity ->
-                    entity instanceof SheepEntity && ((SheepEntity) entity).isShearable()
+            AABB searchBox = BoxUtil.createSearchBox(playerPos, radius);
+            List<Entity> sheepList = world.getEntities(player, searchBox, entity ->
+                    entity instanceof Sheep && ((Sheep) entity).readyForShearing()
             );
-            sheepList.sort(Comparator.comparingDouble(e -> e.squaredDistanceTo(player)));
+            sheepList.sort(Comparator.comparingDouble(e -> e.distanceToSqr(player)));
 
             for (Entity sheep : sheepList) {
-                Hand hand = mainHand.isOf(Items.SHEARS) ? Hand.MAIN_HAND : Hand.OFF_HAND;
+                InteractionHand hand = mainHand.is(Items.SHEARS) ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
                 InteractionHelper.interactEntity(player, sheep, hand);
                 return;
             }
@@ -93,8 +93,8 @@ public class FeedMode implements AutoMode {
         boolean isCreativeOrSpectator = player.isCreative() || player.isSpectator();
 
         if (!isCreativeOrSpectator && enableRefill) {
-            ItemStack main = player.getMainHandStack();
-            ItemStack off = player.getOffHandStack();
+            ItemStack main = player.getMainHandItem();
+            ItemStack off = player.getOffhandItem();
 
             if (!main.isEmpty() && isBreedItem(main.getItem()) && main.getCount() < 64) {
                 ItemRefillHelpermain.refillHands();
@@ -105,14 +105,14 @@ public class FeedMode implements AutoMode {
         }
 
         double radius = AutoHarvestConfig.getInstance().getRadius();
-        Box searchBox = BoxUtil.createSearchBox(playerPos, radius);
+        AABB searchBox = BoxUtil.createSearchBox(playerPos, radius);
 
-        List<Entity> entities = world.getOtherEntities(player, searchBox, entity -> {
+        List<Entity> entities = world.getEntities(player, searchBox, entity -> {
             Set<Item> foods = BREEDABLE_WHITELIST.get(entity.getClass());
             return foods != null && canBreed(entity) && !isOnCooldown(entity);
         });
 
-        entities.sort(Comparator.comparingDouble(e -> e.squaredDistanceTo(player)));
+        entities.sort(Comparator.comparingDouble(e -> e.distanceToSqr(player)));
 
         for (Entity target : entities) {
             Set<Item> validFoods = BREEDABLE_WHITELIST.get(target.getClass());
@@ -136,16 +136,16 @@ public class FeedMode implements AutoMode {
         return false;
     }
 
-    private boolean tryFeedEntity(ClientPlayerEntity player, Entity target, Set<Item> validFoods) {
-        ItemStack main = player.getMainHandStack();
-        ItemStack off = player.getOffHandStack();
+    private boolean tryFeedEntity(LocalPlayer player, Entity target, Set<Item> validFoods) {
+        ItemStack main = player.getMainHandItem();
+        ItemStack off = player.getOffhandItem();
 
         if (!main.isEmpty() && validFoods.contains(main.getItem())) {
-            InteractionHelper.interactEntity(player, target, Hand.MAIN_HAND);
+            InteractionHelper.interactEntity(player, target, InteractionHand.MAIN_HAND);
             return true;
         }
         if (!off.isEmpty() && validFoods.contains(off.getItem())) {
-            InteractionHelper.interactEntity(player, target, Hand.OFF_HAND);
+            InteractionHelper.interactEntity(player, target, InteractionHand.OFF_HAND);
             return true;
         }
 
@@ -155,10 +155,10 @@ public class FeedMode implements AutoMode {
         }
 
         for (int i = 0; i < 9; i++) {
-            ItemStack stack = player.getInventory().getStack(i);
+            ItemStack stack = player.getInventory().getItem(i);
             if (!stack.isEmpty() && stack.getItem() == bestFood) {
                 player.getInventory().setSelectedSlot(i);
-                InteractionHelper.interactEntity(player, target, Hand.MAIN_HAND);
+                InteractionHelper.interactEntity(player, target, InteractionHand.MAIN_HAND);
                 return true;
             }
         }
@@ -166,12 +166,12 @@ public class FeedMode implements AutoMode {
         return false;
     }
 
-    private Item findBestFood(ClientPlayerEntity player, Set<Item> validFoods) {
-        if (validFoods.contains(player.getMainHandStack().getItem())) {
-            return player.getMainHandStack().getItem();
+    private Item findBestFood(LocalPlayer player, Set<Item> validFoods) {
+        if (validFoods.contains(player.getMainHandItem().getItem())) {
+            return player.getMainHandItem().getItem();
         }
-        if (validFoods.contains(player.getOffHandStack().getItem())) {
-            return player.getOffHandStack().getItem();
+        if (validFoods.contains(player.getOffhandItem().getItem())) {
+            return player.getOffhandItem().getItem();
         }
 
         int currentSlot = player.getInventory().getSelectedSlot();
@@ -179,7 +179,7 @@ public class FeedMode implements AutoMode {
         int minDistance = Integer.MAX_VALUE;
 
         for (int i = 0; i < 9; i++) {
-            ItemStack stack = player.getInventory().getStack(i);
+            ItemStack stack = player.getInventory().getItem(i);
             if (!stack.isEmpty() && validFoods.contains(stack.getItem())) {
                 int distance = Math.abs(i - currentSlot);
                 if (distance < minDistance) {
@@ -189,12 +189,12 @@ public class FeedMode implements AutoMode {
             }
         }
 
-        return bestSlot != -1 ? player.getInventory().getStack(bestSlot).getItem() : null;
+        return bestSlot != -1 ? player.getInventory().getItem(bestSlot).getItem() : null;
     }
 
     @Override
     public String getName() {
-        return Text.translatable("autoharvest.mode.feed").getString();
+        return Component.translatable("autoharvest.mode.feed").getString();
     }
 
     @Override

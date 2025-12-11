@@ -2,20 +2,20 @@ package kite.autoharvest.mode;
 
 import kite.autoharvest.config.AutoHarvestConfig;
 import kite.autoharvest.util.*;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.text.Text;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -82,11 +82,11 @@ public class PlantMode implements AutoMode {
             Blocks.FARMLAND
     );
 
-    private static boolean hasSeed(ClientPlayerEntity player, Set<Item> seedItem) {
-        if (seedItem.contains(player.getMainHandStack().getItem())) return true;
-        if (seedItem.contains(player.getOffHandStack().getItem())) return true;
+    private static boolean hasSeed(LocalPlayer player, Set<Item> seedItem) {
+        if (seedItem.contains(player.getMainHandItem().getItem())) return true;
+        if (seedItem.contains(player.getOffhandItem().getItem())) return true;
         for (int i = 0; i < 9; i++) {
-            if (seedItem.contains(player.getInventory().getStack(i).getItem())) {
+            if (seedItem.contains(player.getInventory().getItem(i).getItem())) {
                 return true;
             }
         }
@@ -95,10 +95,10 @@ public class PlantMode implements AutoMode {
 
     @Override
     public void tick() {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if ((client.player != null && !client.player.isCreative() && !client.player.isSpectator() && client.world != null && AutoHarvestConfig.enableRefill())) {
-            ItemStack mainHandStack = client.player.getMainHandStack();
-            ItemStack offHandStack = client.player.getOffHandStack();
+        Minecraft client = Minecraft.getInstance();
+        if ((client.player != null && !client.player.isCreative() && !client.player.isSpectator() && client.level != null && AutoHarvestConfig.enableRefill())) {
+            ItemStack mainHandStack = client.player.getMainHandItem();
+            ItemStack offHandStack = client.player.getOffhandItem();
             if (!mainHandStack.isEmpty() && mainHandStack.getCount() < 64 && REFILLABLE_PLANT_ITEMS.contains(mainHandStack.getItem())) {
                 ItemRefillHelpermain.refillHands();
             }
@@ -107,24 +107,24 @@ public class PlantMode implements AutoMode {
             }
         }
 
-        ClientWorld world = BoxUtil.getWorld();
-        ClientPlayerEntity player = BoxUtil.getPlayer();
+        ClientLevel world = BoxUtil.getWorld();
+        LocalPlayer player = BoxUtil.getPlayer();
         if (world == null || player == null) return;
 
-        Vec3d playerPos = BoxUtil.getPlayerPos();
+        Vec3 playerPos = BoxUtil.getPlayerPos();
         if (playerPos == null) return;
 
         double radius = AutoHarvestConfig.getInstance().getRadius();
-        Box searchBox = BoxUtil.createSearchBox(playerPos, radius);
+        AABB searchBox = BoxUtil.createSearchBox(playerPos, radius);
         int radiusInt = (int) Math.ceil(radius);
 
-        for (BlockPos pos : BlockPos.iterateOutwards(BlockPos.ofFloored(playerPos), radiusInt, radiusInt, radiusInt)) {
-            if (!searchBox.contains(pos.toCenterPos())) continue;
+        for (BlockPos pos : BlockPos.withinManhattan(BlockPos.containing(playerPos), radiusInt, radiusInt, radiusInt)) {
+            if (!searchBox.contains(pos.getCenter())) continue;
             if (BoxUtil.isInSphere(pos, playerPos, radius)) continue;
 
             if (!world.getBlockState(pos).isAir()) continue;
 
-            BlockPos basePos = pos.down();
+            BlockPos basePos = pos.below();
             Block baseBlock = world.getBlockState(basePos).getBlock();
 
             boolean canPlantCrop = (baseBlock == Blocks.FARMLAND) && hasSeed(player, CROP_SEEDS);
@@ -136,8 +136,8 @@ public class PlantMode implements AutoMode {
             Direction cocoaFacing = null;
             BlockPos cocoaLogPos = null;
 
-            for (Direction dir : Direction.Type.HORIZONTAL) {
-                BlockPos logPos = pos.offset(dir.getOpposite());
+            for (Direction dir : Direction.Plane.HORIZONTAL) {
+                BlockPos logPos = pos.offset(dir.getOpposite().getUnitVec3i());
                 if (JUNGLE_LOG_BLOCKS.contains(world.getBlockState(logPos).getBlock())) {
                     cocoaFacing = dir;
                     cocoaLogPos = logPos;
@@ -164,7 +164,7 @@ public class PlantMode implements AutoMode {
                 if (bambooSpacing > 0) {
                     for (int dx = -bambooSpacing; dx <= bambooSpacing; dx++) {
                         for (int dz = -bambooSpacing; dz <= bambooSpacing; dz++) {
-                            BlockPos checkPos = basePos.add(dx, 1, dz);
+                            BlockPos checkPos = basePos.offset(dx, 1, dz);
                             Block block = world.getBlockState(checkPos).getBlock();
                             if (block == Blocks.BAMBOO || block == Blocks.BAMBOO_SAPLING) {
                                 hasNearbyBamboo = true;
@@ -185,11 +185,11 @@ public class PlantMode implements AutoMode {
 
             if (targetSeed == null) continue;
 
-            Hand usedHand = null;
-            if (player.getMainHandStack().getItem() == targetSeed) {
-                usedHand = Hand.MAIN_HAND;
-            } else if (player.getOffHandStack().getItem() == targetSeed) {
-                usedHand = Hand.OFF_HAND;
+            InteractionHand usedHand = null;
+            if (player.getMainHandItem().getItem() == targetSeed) {
+                usedHand = InteractionHand.MAIN_HAND;
+            } else if (player.getOffhandItem().getItem() == targetSeed) {
+                usedHand = InteractionHand.OFF_HAND;
             }
 
             if (usedHand != null) {
@@ -205,7 +205,7 @@ public class PlantMode implements AutoMode {
             int minDistance = Integer.MAX_VALUE;
 
             for (int i = 0; i < 9; i++) {
-                ItemStack stack = player.getInventory().getStack(i);
+                ItemStack stack = player.getInventory().getItem(i);
                 if (!stack.isEmpty() && stack.getItem() == targetSeed) {
                     int distance = Math.abs(i - currentSlot);
                     if (distance < minDistance) {
@@ -219,18 +219,18 @@ public class PlantMode implements AutoMode {
                 if (AutoHarvestConfig.autoSwitchHotbar()) {
                     player.getInventory().setSelectedSlot(bestSlot);
                 }
-                InteractionHelper.interactBlock(player, basePos, Hand.MAIN_HAND, Direction.UP);
+                InteractionHelper.interactBlock(player, basePos, InteractionHand.MAIN_HAND, Direction.UP);
                 return;
             }
         }
     }
 
-    private Item findBestSeed(ClientPlayerEntity player, Set<Item> allowedSeeds) {
-        if (allowedSeeds.contains(player.getMainHandStack().getItem())) {
-            return player.getMainHandStack().getItem();
+    private Item findBestSeed(LocalPlayer player, Set<Item> allowedSeeds) {
+        if (allowedSeeds.contains(player.getMainHandItem().getItem())) {
+            return player.getMainHandItem().getItem();
         }
-        if (allowedSeeds.contains(player.getOffHandStack().getItem())) {
-            return player.getOffHandStack().getItem();
+        if (allowedSeeds.contains(player.getOffhandItem().getItem())) {
+            return player.getOffhandItem().getItem();
         }
 
         int currentSlot = player.getInventory().getSelectedSlot();
@@ -238,7 +238,7 @@ public class PlantMode implements AutoMode {
         int minDistance = Integer.MAX_VALUE;
 
         for (int i = 0; i < 9; i++) {
-            ItemStack stack = player.getInventory().getStack(i);
+            ItemStack stack = player.getInventory().getItem(i);
             if (!stack.isEmpty() && allowedSeeds.contains(stack.getItem())) {
                 int distance = Math.abs(i - currentSlot);
                 if (distance < minDistance) {
@@ -248,12 +248,12 @@ public class PlantMode implements AutoMode {
             }
         }
 
-        return bestSlot != -1 ? player.getInventory().getStack(bestSlot).getItem() : null;
+        return bestSlot != -1 ? player.getInventory().getItem(bestSlot).getItem() : null;
     }
 
     @Override
     public String getName() {
-        return Text.translatable("autoharvest.mode.plant").getString();
+        return Component.translatable("autoharvest.mode.plant").getString();
     }
 
     @Override

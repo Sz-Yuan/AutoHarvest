@@ -4,17 +4,17 @@ import kite.autoharvest.config.AutoHarvestConfig;
 import kite.autoharvest.util.BoxUtil;
 import kite.autoharvest.util.InteractionHelper;
 import kite.autoharvest.util.WaterProximityChecker;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
-import net.minecraft.text.Text;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.Set;
 
@@ -38,11 +38,11 @@ public class HoeMode implements AutoMode {
 
     @Override
     public void tick() {
-        ClientWorld world = BoxUtil.getWorld();
-        ClientPlayerEntity player = BoxUtil.getPlayer();
+        ClientLevel world = BoxUtil.getWorld();
+        LocalPlayer player = BoxUtil.getPlayer();
         if (world == null || player == null) return;
 
-        Vec3d playerPos = BoxUtil.getPlayerPos();
+        Vec3 playerPos = BoxUtil.getPlayerPos();
         if (playerPos == null) return;
 
         double radius = AutoHarvestConfig.getInstance().getRadius();
@@ -50,10 +50,10 @@ public class HoeMode implements AutoMode {
 
         // 检查周围是否存在可锄地的方块
         boolean hasValidBlock = false;
-        for (BlockPos pos : BlockPos.iterateOutwards(BlockPos.ofFloored(playerPos), radiusInt, radiusInt, radiusInt)) {
+        for (BlockPos pos : BlockPos.withinManhattan(BlockPos.containing(playerPos), radiusInt, radiusInt, radiusInt)) {
             if (BoxUtil.isInSphere(pos, playerPos, radius)) continue;
             if (!HOEABLE_BLOCKS.contains(world.getBlockState(pos).getBlock())) continue;
-            if (!world.getBlockState(pos.up()).isAir()) continue;
+            if (!world.getBlockState(pos.above()).isAir()) continue;
             if (WaterProximityChecker.isWithinHydrationRange(world, pos)) continue;
 
             hasValidBlock = true;
@@ -63,14 +63,14 @@ public class HoeMode implements AutoMode {
             return;
         }
 
-        Hand usedHand = getHoeInHand(player);
+        InteractionHand usedHand = getHoeInHand(player);
         if (usedHand == null) {
             int currentSlot = player.getInventory().getSelectedSlot();
             int bestSlot = -1;
             int minDistance = Integer.MAX_VALUE;
 
             for (int i = 0; i < 9; i++) {
-                var stack = player.getInventory().getStack(i);
+                var stack = player.getInventory().getItem(i);
                 if (!stack.isEmpty() && HOES.contains(stack.getItem())) {
                     int diff = Math.abs(i - currentSlot);
                     int distance = Math.min(diff, 9 - diff);
@@ -86,10 +86,10 @@ public class HoeMode implements AutoMode {
             }
             return;
         }
-        for (BlockPos pos : BlockPos.iterateOutwards(BlockPos.ofFloored(playerPos), radiusInt, radiusInt, radiusInt)) {
+        for (BlockPos pos : BlockPos.withinManhattan(BlockPos.containing(playerPos), radiusInt, radiusInt, radiusInt)) {
             if (BoxUtil.isInSphere(pos, playerPos, radius)) continue;
             if (!HOEABLE_BLOCKS.contains(world.getBlockState(pos).getBlock())) continue;
-            if (!world.getBlockState(pos.up()).isAir()) continue;
+            if (!world.getBlockState(pos.above()).isAir()) continue;
             if (WaterProximityChecker.isWithinHydrationRange(world, pos)) continue;
 
             InteractionHelper.interactBlock(player, pos, usedHand, Direction.UP);
@@ -97,19 +97,19 @@ public class HoeMode implements AutoMode {
         }
     }
 
-    private Hand getHoeInHand(ClientPlayerEntity player) {
-        if (HOES.contains(player.getMainHandStack().getItem())) {
-            return Hand.MAIN_HAND;
+    private InteractionHand getHoeInHand(LocalPlayer player) {
+        if (HOES.contains(player.getMainHandItem().getItem())) {
+            return InteractionHand.MAIN_HAND;
         }
-        if (HOES.contains(player.getOffHandStack().getItem())) {
-            return Hand.OFF_HAND;
+        if (HOES.contains(player.getOffhandItem().getItem())) {
+            return InteractionHand.OFF_HAND;
         }
         return null;
     }
 
     @Override
     public String getName() {
-        return Text.translatable("autoharvest.mode.hoeing").getString();
+        return Component.translatable("autoharvest.mode.hoeing").getString();
     }
 
     @Override
