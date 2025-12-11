@@ -2,7 +2,6 @@ package kite.autoharvest.util;
 
 import kite.autoharvest.util.whitelist.itemWhiteList;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.player.Inventory;
