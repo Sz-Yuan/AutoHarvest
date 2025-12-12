@@ -5,6 +5,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.FluidState;
 
@@ -26,9 +27,12 @@ public final class WaterProximityChecker {
             var state = world.getBlockState(offsetPos);
             if (state.getBlock() == Blocks.WATER) {
                 FluidState fluid = state.getFluidState();
-                if (fluid.is(net.minecraft.tags.FluidTags.WATER) && fluid.isSource()) {
+                if (fluid.is(FluidTags.WATER) && fluid.isSource()) {
                     return true;
                 }
+            }
+            if (state.hasProperty(BlockStateProperties.WATERLOGGED) && state.getValue(BlockStateProperties.WATERLOGGED)){
+                return true;
             }
         }
         return false;
