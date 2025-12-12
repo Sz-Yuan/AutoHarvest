@@ -44,6 +44,9 @@ public class AutoHarvestConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip
     public boolean autoSwitchRod = true;
 
+    @ConfigEntry.Gui.Tooltip
+    public boolean isFlower = false;
+
     public double getRadius() {
         return radiusCenti / 10.0;
     }
@@ -94,5 +97,8 @@ public class AutoHarvestConfig implements ConfigData {
     }
     public static boolean autoSwitchRod(){
         return getInstance().autoSwitchRod;
+    }
+    public static boolean isFlower(){
+        return getInstance().isFlower;
     }
 }

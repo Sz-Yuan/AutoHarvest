@@ -15,7 +15,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +24,8 @@ import org.slf4j.LoggerFactory;
 public class AutoHarvest implements ClientModInitializer {
     public static final String MOD_ID = "autoharvest";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-    public static final KeyMapping.Category AUTOHARVEST_CATEGORY = new KeyMapping.Category(ResourceLocation.fromNamespaceAndPath("kite", "autoharvest"));
-    public static final KeyMapping.Category AUTOHARVEST_CATEGORY_MODE = new KeyMapping.Category(ResourceLocation.fromNamespaceAndPath("kite", "autoharvest"));
+    public static final KeyMapping.Category AUTOHARVEST_CATEGORY = new KeyMapping.Category(Identifier.fromNamespaceAndPath("kite", "autoharvest"));
+    public static final KeyMapping.Category AUTOHARVEST_CATEGORY_MODE = new KeyMapping.Category(Identifier.fromNamespaceAndPath("kite", "autoharvest"));
     public static final KeyMapping TOGGLE_KEY = new KeyMapping(
             "key.autoharvest.toggle",
             InputConstants.Type.KEYSYM,

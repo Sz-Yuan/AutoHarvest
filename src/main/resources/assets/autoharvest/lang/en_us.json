@@ -41,5 +41,7 @@
   "text.autoconfig.autoharvest.option.fishingReCastDelay": "Auto Fishing Delay",
   "text.autoconfig.autoharvest.option.fishingReCastDelay.@Tooltip": "The interval between retracting the fishing rod and automatically casting it again, in ticks.",
   "text.autoconfig.autoharvest.option.autoSwitchRod": "Auto-switch fishing rod",
-  "text.autoconfig.autoharvest.option.autoSwitchRod.@Tooltip": "Automatically switch to the fishing rod in the hotbar when in fishing mode."
+  "text.autoconfig.autoharvest.option.autoSwitchRod.@Tooltip": "Automatically switch to the fishing rod in the hotbar when in fishing mode.",
+  "text.autoconfig.autoharvest.option.isFlower": "skip flowers",
+  "text.autoconfig.autoharvest.option.isFlower.@Tooltip": "Should weed mode skip flowers?"
 }
