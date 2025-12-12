@@ -46,6 +46,9 @@ public class WeedMode implements AutoMode {
         WEED_BLOCKS.add(Blocks.PITCHER_PLANT);
         WEED_BLOCKS.add(Blocks.TORCHFLOWER);
         WEED_BLOCKS.add(Blocks.LARGE_FERN);
+        WEED_BLOCKS.add(Blocks.WILDFLOWERS);
+        WEED_BLOCKS.add(Blocks.PINK_PETALS);
+        WEED_BLOCKS.add(Blocks.LEAF_LITTER);
     }
 
     @Override
@@ -69,6 +72,9 @@ public class WeedMode implements AutoMode {
             Block block = world.getBlockState(blockPos).getBlock();
 
             if ((block instanceof FlowerBlock || block instanceof TallFlowerBlock) && AutoHarvestConfig.isFlower()) {
+                continue;
+            }
+            if ((block instanceof FlowerBedBlock || block == Blocks.LEAF_LITTER) && AutoHarvestConfig.isFlower()){
                 continue;
             }
 
