@@ -8,8 +8,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -44,8 +43,13 @@ public class WeedMode implements AutoMode {
         WEED_BLOCKS.add(Blocks.BUSH);
         WEED_BLOCKS.add(Blocks.SHORT_DRY_GRASS);
         WEED_BLOCKS.add(Blocks.TALL_DRY_GRASS);
+        WEED_BLOCKS.add(Blocks.PITCHER_PLANT);
+        WEED_BLOCKS.add(Blocks.TORCHFLOWER);
+        WEED_BLOCKS.add(Blocks.LARGE_FERN);
+        WEED_BLOCKS.add(Blocks.WILDFLOWERS);
+        WEED_BLOCKS.add(Blocks.PINK_PETALS);
+        WEED_BLOCKS.add(Blocks.LEAF_LITTER);
     }
-
 
     @Override
     public void tick() {
@@ -66,6 +70,14 @@ public class WeedMode implements AutoMode {
 
             Minecraft client = Minecraft.getInstance();
             Block block = world.getBlockState(blockPos).getBlock();
+
+            if ((block instanceof FlowerBlock || block instanceof TallFlowerBlock) && AutoHarvestConfig.isFlower()) {
+                continue;
+            }
+            if ((block instanceof FlowerBedBlock || block == Blocks.LEAF_LITTER) && AutoHarvestConfig.isFlower()){
+                continue;
+            }
+
             if (WEED_BLOCKS.contains(block)) {
                 if (client.gameMode != null) {
                     InteractionHelper.breakBlock(blockPos, Direction.UP);

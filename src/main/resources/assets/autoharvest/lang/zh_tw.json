@@ -41,5 +41,7 @@
   "text.autoconfig.autoharvest.option.fishingReCastDelay": "自動釣魚延遲",
   "text.autoconfig.autoharvest.option.fishingReCastDelay.@Tooltip": "收回魚竿與自動拋出魚竿之間的間隔，單位為 tick",
   "text.autoconfig.autoharvest.option.autoSwitchRod": "自動切換魚竿",
-  "text.autoconfig.autoharvest.option.autoSwitchRod.@Tooltip": "在釣魚模式下自動切換至快捷欄中的魚竿"
+  "text.autoconfig.autoharvest.option.autoSwitchRod.@Tooltip": "在釣魚模式下自動切換至快捷欄中的魚竿",
+  "text.autoconfig.autoharvest.option.isFlower": "跳過花朵",
+  "text.autoconfig.autoharvest.option.isFlower.@Tooltip": "除草模式將跳過花朵、花簇和枯葉"
 }
