@@ -11,21 +11,26 @@ public enum ModeManager {
     private AutoMode currentMode = null;
     private AutoMode cachedMode = null;
     private int tickCounter = 0;
+    private boolean active = false;
 
     public void setCurrentMode(AutoMode mode) {
-        currentMode = mode;
+        this.currentMode = mode;
+        if (AutoHarvestConfig.getInstance().autoenable){
+            activateMode(mode);
+        }
     }
 
     public void setCachedMode() {
         cachedMode = AutoHarvestConfig.thecurrentMode().setMode();
     }
 
-    public void setMode(AutoMode mode) {
-        if (this.currentMode != null) {
+    private void activateMode(AutoMode mode) {
+        if (this.currentMode != null && active) {
             this.currentMode.onDisable();
         }
         this.currentMode = mode;
         this.cachedMode = mode;
+        this.active = true;
 
         if (Minecraft.getInstance().player != null) {
             Minecraft.getInstance().player.displayClientMessage(
@@ -35,8 +40,8 @@ public enum ModeManager {
         }
     }
 
-    public void clearMode() {
-        if (this.currentMode != null) {
+    private void deactivateMode() {
+        if (this.currentMode != null && active) {
             this.currentMode.onDisable();
             if (Minecraft.getInstance().player != null) {
                 Minecraft.getInstance().player.displayClientMessage(
@@ -46,24 +51,26 @@ public enum ModeManager {
             }
         }
         this.currentMode = null;
+        this.cachedMode = null;
+        this.active = false;
     }
 
     public void toggle() {
-        setCachedMode();
-        if (this.currentMode != null) {
-            clearMode();
+        if (active) {
+            deactivateMode();
         } else {
-            if (this.cachedMode != null) {
-                setMode(this.cachedMode);
-            } else {
-                AutoMode mode = AutoHarvestConfig.thecurrentMode().setMode();
-                setMode(mode);
-            }
+            setCachedMode();
+            AutoMode modeToActivate = (cachedMode != null) ? cachedMode : AutoHarvestConfig.thecurrentMode().setMode();
+            activateMode(modeToActivate);
         }
     }
 
+    public void clearMode() {
+        deactivateMode();
+    }
+
     public void tick() {
-        if (currentMode != null) {
+        if (active && currentMode != null) {
             tickCounter++;
             int interval = AutoHarvestConfig.ticksPerAction();
             if (tickCounter >= interval) {
