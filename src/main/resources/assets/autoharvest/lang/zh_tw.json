@@ -45,5 +45,7 @@
   "text.autoconfig.autoharvest.option.isFlower": "跳過花朵",
   "text.autoconfig.autoharvest.option.isFlower.@Tooltip": "除草模式將跳過花朵、花簇和枯葉",
   "text.autoconfig.autoharvest.option.autoenable": "自動啟用",
-  "text.autoconfig.autoharvest.option.autoenable.@Tooltip": "切換模式後自動啟動該模式"
+  "text.autoconfig.autoharvest.option.autoenable.@Tooltip": "切換模式後自動啟動該模式",
+  "text.autoconfig.autoharvest.option.skipwater": "不檢查水源",
+  "text.autoconfig.autoharvest.option.skipwater.@Tooltip": "鋤地模式不檢查周圍是否存在水源"
 }

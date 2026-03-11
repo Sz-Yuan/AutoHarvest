@@ -45,5 +45,7 @@
   "text.autoconfig.autoharvest.option.isFlower": "skip flowers",
   "text.autoconfig.autoharvest.option.isFlower.@Tooltip": "Should weed mode skip flowers、leaf_litter and flower cluster?",
   "text.autoconfig.autoharvest.option.autoenable": "Auto Enable",
-  "text.autoconfig.autoharvest.option.autoenable.@Tooltip": "Automatically enable the mode after switching"
+  "text.autoconfig.autoharvest.option.autoenable.@Tooltip": "Automatically enable the mode after switching",
+  "text.autoconfig.autoharvest.option.skipwater": "Skip Water Check",
+  "text.autoconfig.autoharvest.option.skipwater.@Tooltip": "Hoeing mode will not check for nearby water sources"
 }

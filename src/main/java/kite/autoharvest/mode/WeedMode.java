@@ -49,6 +49,8 @@ public class WeedMode implements AutoMode {
         WEED_BLOCKS.add(Blocks.WILDFLOWERS);
         WEED_BLOCKS.add(Blocks.PINK_PETALS);
         WEED_BLOCKS.add(Blocks.LEAF_LITTER);
+        WEED_BLOCKS.add(Blocks.SEAGRASS);
+        WEED_BLOCKS.add(Blocks.TALL_SEAGRASS);
     }
 
     @Override

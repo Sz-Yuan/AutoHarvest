@@ -50,6 +50,9 @@ public class AutoHarvestConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip
     public boolean autoenable = false;
 
+    @ConfigEntry.Gui.Tooltip
+    public boolean skipwater = false;
+
     public double getRadius() {
         return radiusCenti / 10.0;
     }
@@ -105,6 +108,10 @@ public class AutoHarvestConfig implements ConfigData {
 
     public static boolean isFlower() {
         return getInstance().isFlower;
+    }
+
+    public static boolean skipWater() {
+        return !getInstance().skipwater;
     }
 
 }
