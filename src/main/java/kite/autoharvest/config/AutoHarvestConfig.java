@@ -47,6 +47,9 @@ public class AutoHarvestConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip
     public boolean isFlower = false;
 
+    @ConfigEntry.Gui.Tooltip
+    public boolean skipwater = false;
+
     public double getRadius() {
         return radiusCenti / 10.0;
     }
@@ -95,10 +98,16 @@ public class AutoHarvestConfig implements ConfigData {
     public static int fishingReCastDelay() {
         return getInstance().fishingReCastDelay;
     }
-    public static boolean autoSwitchRod(){
+
+    public static boolean autoSwitchRod() {
         return getInstance().autoSwitchRod;
     }
-    public static boolean isFlower(){
+
+    public static boolean isFlower() {
         return getInstance().isFlower;
+    }
+
+    public static boolean skipWater() {
+        return !AutoHarvestConfig.getInstance().skipwater;
     }
 }

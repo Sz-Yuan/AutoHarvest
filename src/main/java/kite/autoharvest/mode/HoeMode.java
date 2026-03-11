@@ -54,7 +54,7 @@ public class HoeMode implements AutoMode {
             if (BoxUtil.isInSphere(pos, playerPos, radius)) continue;
             if (!HOEABLE_BLOCKS.contains(world.getBlockState(pos).getBlock())) continue;
             if (!world.getBlockState(pos.above()).isAir()) continue;
-            if (WaterProximityChecker.isWithinHydrationRange(world, pos)) continue;
+            if (AutoHarvestConfig.skipWater() && WaterProximityChecker.isWithinHydrationRange(world, pos)) continue;
 
             hasValidBlock = true;
             break;
@@ -90,7 +90,7 @@ public class HoeMode implements AutoMode {
             if (BoxUtil.isInSphere(pos, playerPos, radius)) continue;
             if (!HOEABLE_BLOCKS.contains(world.getBlockState(pos).getBlock())) continue;
             if (!world.getBlockState(pos.above()).isAir()) continue;
-            if (WaterProximityChecker.isWithinHydrationRange(world, pos)) continue;
+            if (AutoHarvestConfig.skipWater() && WaterProximityChecker.isWithinHydrationRange(world, pos)) continue;
 
             InteractionHelper.interactBlock(player, pos, usedHand, Direction.UP);
             return;
