@@ -41,7 +41,7 @@ public enum modeEnum {
         }
     },
 
-    feed{
+    feed {
         @Override
         public AutoMode setMode() {
             return new FeedMode();

@@ -25,7 +25,8 @@ public class CompositeMode implements AutoMode {
                 .map(AutoMode::getName)
                 .collect(Collectors.joining(" + "));
     }
-    public static String farmmerode_string(){
+
+    public static String farmmerode_string() {
         return farmer().getName();
     }
 

@@ -15,7 +15,7 @@ public enum ModeManager {
 
     public void setCurrentMode(AutoMode mode) {
         this.currentMode = mode;
-        if (AutoHarvestConfig.getInstance().autoenable){
+        if (AutoHarvestConfig.getInstance().autoenable) {
             activateMode(mode);
         }
     }

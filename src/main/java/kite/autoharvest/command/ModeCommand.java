@@ -28,7 +28,7 @@ public class ModeCommand {
     );
 
     public static void register() {
-        ClientCommandRegistrationCallback.EVENT.register((dispatcher,buildContext ) -> {
+        ClientCommandRegistrationCallback.EVENT.register((dispatcher, buildContext) -> {
             var autoharvest = ClientCommands.literal("autoharvest");
 
             autoharvest
@@ -45,6 +45,7 @@ public class ModeCommand {
             dispatcher.register(autoharvest);
         });
     }
+
     private static CompletableFuture<Suggestions> suggestModes(SuggestionsBuilder builder) {
         for (String mode : MODE_NAMES) {
             builder.suggest(mode);

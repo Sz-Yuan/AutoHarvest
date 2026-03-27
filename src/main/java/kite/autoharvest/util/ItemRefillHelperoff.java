@@ -70,7 +70,7 @@ public class ItemRefillHelperoff {
         if (client.player == null) return;
 
         if (client.gameMode != null) {
-            client.gameMode.handleContainerInput (
+            client.gameMode.handleContainerInput(
                     handler.containerId,
                     slotIndex,
                     0,

@@ -30,7 +30,7 @@ public final class WaterProximityChecker {
                     return true;
                 }
             }
-            if (state.hasProperty(BlockStateProperties.WATERLOGGED) && state.getValue(BlockStateProperties.WATERLOGGED)){
+            if (state.hasProperty(BlockStateProperties.WATERLOGGED) && state.getValue(BlockStateProperties.WATERLOGGED)) {
                 return true;
             }
         }
