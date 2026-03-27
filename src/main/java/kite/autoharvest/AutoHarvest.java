@@ -10,6 +10,7 @@ import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -35,7 +36,7 @@ public class AutoHarvest implements ClientModInitializer {
             "key.autoharvest.cycle",
             InputConstants.Type.KEYSYM,
             InputConstants.UNKNOWN.getValue(),
-            AUTOHARVEST_CATEGORY_MODE
+            AUTOHARVEST_CATEGORY
     );
 
     private static modeEnum getNextMode(modeEnum current) {
@@ -74,16 +75,16 @@ public class AutoHarvest implements ClientModInitializer {
         LOGGER.info("Hello AutoHarvest!");
         AutoConfig.register(AutoHarvestConfig.class, GsonConfigSerializer::new);
         ModeCommand.register();
-        KeyBindingHelper.registerKeyBinding(TOGGLE_KEY);
-        KeyBindingHelper.registerKeyBinding(CYCLE_MODE_KEY);
-        KeyBindingHelper.registerKeyBinding(WEED_KEY);
-        KeyBindingHelper.registerKeyBinding(PLANT_KEY);
-        KeyBindingHelper.registerKeyBinding(HARVEST_KEY);
-        KeyBindingHelper.registerKeyBinding(FARMER_KEY);
-        KeyBindingHelper.registerKeyBinding(BONEMEAL_KEY);
-        KeyBindingHelper.registerKeyBinding(FEED_KEY);
-        KeyBindingHelper.registerKeyBinding(FISHING_KEY);
-        KeyBindingHelper.registerKeyBinding(HOE_KEY);
+        KeyMappingHelper.registerKeyMapping(TOGGLE_KEY);
+        KeyMappingHelper.registerKeyMapping(CYCLE_MODE_KEY);
+        KeyMappingHelper.registerKeyMapping(WEED_KEY);
+        KeyMappingHelper.registerKeyMapping(PLANT_KEY);
+        KeyMappingHelper.registerKeyMapping(HARVEST_KEY);
+        KeyMappingHelper.registerKeyMapping(FARMER_KEY);
+        KeyMappingHelper.registerKeyMapping(BONEMEAL_KEY);
+        KeyMappingHelper.registerKeyMapping(FEED_KEY);
+        KeyMappingHelper.registerKeyMapping(FISHING_KEY);
+        KeyMappingHelper.registerKeyMapping(HOE_KEY);
         ClientPlayConnectionEvents.DISCONNECT.register(((handler, client) -> ModeManager.INSTANCE.clearMode()));
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (CYCLE_MODE_KEY.consumeClick()) {

@@ -6,7 +6,7 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.item.ItemStack;
 
 public class ItemRefillHelpermain {
@@ -69,11 +69,11 @@ public class ItemRefillHelpermain {
         if (client.player == null) return;
 
         if (client.gameMode != null) {
-            client.gameMode.handleInventoryMouseClick(
+            client.gameMode.handleContainerInput(
                     handler.containerId,
                     slotIndex,
                     0,
-                    ClickType.PICKUP,
+                    ContainerInput.PICKUP,
                     client.player
             );
         }

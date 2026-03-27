@@ -8,6 +8,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 
 public final class InteractionHelper {
@@ -31,9 +32,12 @@ public final class InteractionHelper {
 
     public static void interactEntity(LocalPlayer player, Entity target, InteractionHand hand) {
         Minecraft client = Minecraft.getInstance();
+        Vec3 hitLocation = target.getBoundingBox().getCenter();
+        EntityHitResult entityHitResult = new EntityHitResult(target, hitLocation);
         if (client.gameMode == null) return;
-        client.gameMode.interact(player, target, hand);
+        client.gameMode.interact(player, target, entityHitResult, hand);
     }
+
     public static void interactItem(LocalPlayer player, InteractionHand hand) {
         Minecraft client = Minecraft.getInstance();
         if (client.gameMode != null) {

@@ -8,9 +8,10 @@ import kite.autoharvest.config.AutoHarvestConfig;
 import kite.autoharvest.config.modeEnum;
 import kite.autoharvest.manager.ModeManager;
 import kite.autoharvest.mode.*;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
@@ -28,22 +29,23 @@ public class ModeCommand {
     );
 
     public static void register() {
-        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
-                    var autoharvest = ClientCommandManager.literal("autoharvest");
-                    autoharvest
-                            .then(ClientCommandManager.literal("toggle").executes(ModeCommand::executeToggle));
-                    autoharvest
-                            .then(ClientCommandManager.literal("mode")
-                                    .then(ClientCommandManager.argument("mode", StringArgumentType.word())
-                                            .suggests((context, builder) -> suggestModes(builder))
-                                            .executes(ModeCommand::executeSetMode)
-                                    )
-                            );
-                    dispatcher.register(autoharvest);
-                }
-        );
-    }
+        ClientCommandRegistrationCallback.EVENT.register((dispatcher, _) -> {
+            var autoharvest = ClientCommands.literal("autoharvest");
 
+            autoharvest
+                    .then(ClientCommands.literal("toggle").executes(ModeCommand::executeToggle));
+
+            autoharvest
+                    .then(ClientCommands.literal("mode")
+                            .then(ClientCommands.argument("mode", StringArgumentType.word())
+                                    .suggests((context, builder) -> suggestModes(builder))
+                                    .executes(ModeCommand::executeSetMode)
+                            )
+                    );
+
+            dispatcher.register(autoharvest);
+        });
+    }
     private static CompletableFuture<Suggestions> suggestModes(SuggestionsBuilder builder) {
         for (String mode : MODE_NAMES) {
             builder.suggest(mode);
