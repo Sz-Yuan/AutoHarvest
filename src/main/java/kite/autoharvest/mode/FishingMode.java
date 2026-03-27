@@ -129,7 +129,7 @@ public class FishingMode implements AutoMode {
         }
         if ((currentTime - firstStuckTime) % REPEAT_MESSAGE_INTERVAL == 0) {
             if (currentTime > firstStuckTime) {
-                player.displayClientMessage(Component.translatable("autoharvest.mode.fishing.error"), true);
+                player.sendOverlayMessage(Component.translatable("autoharvest.mode.fishing.error"));
             }
         }
     }

@@ -33,9 +33,8 @@ public enum ModeManager {
         this.active = true;
 
         if (Minecraft.getInstance().player != null) {
-            Minecraft.getInstance().player.displayClientMessage(
-                    Component.translatable("autoharvest.message.mode.enabled", mode.getName()),
-                    false
+            Minecraft.getInstance().player.sendSystemMessage(
+                    Component.translatable("autoharvest.message.mode.enabled", mode.getName())
             );
         }
     }
@@ -44,9 +43,8 @@ public enum ModeManager {
         if (this.currentMode != null && active) {
             this.currentMode.onDisable();
             if (Minecraft.getInstance().player != null) {
-                Minecraft.getInstance().player.displayClientMessage(
-                        Component.translatable("autoharvest.message.disabled"),
-                        false
+                Minecraft.getInstance().player.sendSystemMessage(
+                        Component.translatable("autoharvest.message.disabled")
                 );
             }
         }
