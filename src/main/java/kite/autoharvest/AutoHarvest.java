@@ -26,18 +26,8 @@ public class AutoHarvest implements ClientModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
     public static final KeyMapping.Category AUTOHARVEST_CATEGORY = new KeyMapping.Category(Identifier.fromNamespaceAndPath("kite", "autoharvest"));
     public static final KeyMapping.Category AUTOHARVEST_CATEGORY_MODE = new KeyMapping.Category(Identifier.fromNamespaceAndPath("kite", "autoharvest"));
-    public static final KeyMapping TOGGLE_KEY = new KeyMapping(
-            "key.autoharvest.toggle",
-            InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_H,
-            AUTOHARVEST_CATEGORY
-    );
-    public static final KeyMapping CYCLE_MODE_KEY = new KeyMapping(
-            "key.autoharvest.cycle",
-            InputConstants.Type.KEYSYM,
-            InputConstants.UNKNOWN.getValue(),
-            AUTOHARVEST_CATEGORY
-    );
+    public static final KeyMapping TOGGLE_KEY = new KeyMapping("key.autoharvest.toggle", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_H, AUTOHARVEST_CATEGORY);
+    public static final KeyMapping CYCLE_MODE_KEY = new KeyMapping("key.autoharvest.cycle", InputConstants.Type.KEYSYM, InputConstants.UNKNOWN.getValue(), AUTOHARVEST_CATEGORY);
 
     private static modeEnum getNextMode(modeEnum current) {
         return switch (current) {
@@ -62,12 +52,7 @@ public class AutoHarvest implements ClientModInitializer {
     public static final KeyMapping HOE_KEY = createModeKey("hoeing");
 
     private static KeyMapping createModeKey(String name) {
-        return new KeyMapping(
-                "autoharvest.mode." + name,
-                InputConstants.Type.KEYSYM,
-                InputConstants.UNKNOWN.getValue(),
-                AUTOHARVEST_CATEGORY_MODE
-        );
+        return new KeyMapping("autoharvest.mode." + name, InputConstants.Type.KEYSYM, InputConstants.UNKNOWN.getValue(), AUTOHARVEST_CATEGORY_MODE);
     }
 
     @Override
