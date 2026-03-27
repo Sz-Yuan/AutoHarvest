@@ -85,8 +85,8 @@ public class AutoHarvest implements ClientModInitializer {
         KeyMappingHelper.registerKeyMapping(FEED_KEY);
         KeyMappingHelper.registerKeyMapping(FISHING_KEY);
         KeyMappingHelper.registerKeyMapping(HOE_KEY);
-        ClientPlayConnectionEvents.DISCONNECT.register(((handler, client) -> ModeManager.INSTANCE.clearMode()));
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+        ClientPlayConnectionEvents.DISCONNECT.register(((_, _) -> ModeManager.INSTANCE.clearMode()));
+        ClientTickEvents.END_CLIENT_TICK.register(_ -> {
             if (CYCLE_MODE_KEY.consumeClick()) {
                 modeEnum current = AutoHarvestConfig.getInstance().thecurrentMode;
                 modeEnum next = getNextMode(current);

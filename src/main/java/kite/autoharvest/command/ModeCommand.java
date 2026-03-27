@@ -11,7 +11,6 @@ import kite.autoharvest.mode.*;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
@@ -38,7 +37,7 @@ public class ModeCommand {
             autoharvest
                     .then(ClientCommands.literal("mode")
                             .then(ClientCommands.argument("mode", StringArgumentType.word())
-                                    .suggests((context, builder) -> suggestModes(builder))
+                                    .suggests((_, builder) -> suggestModes(builder))
                                     .executes(ModeCommand::executeSetMode)
                             )
                     );
@@ -46,6 +45,7 @@ public class ModeCommand {
             dispatcher.register(autoharvest);
         });
     }
+
     private static CompletableFuture<Suggestions> suggestModes(SuggestionsBuilder builder) {
         for (String mode : MODE_NAMES) {
             builder.suggest(mode);
