@@ -40,8 +40,8 @@ public final class WaterProximityChecker {
     public static boolean isWithinHydrationRange(Level world, BlockPos pos) {
         for (int dx = -4; dx <= 4; dx++) {
             for (int dz = -4; dz <= 4; dz++) {
-                for (int dy = -1; dy <= 1; dy++) {
-                    BlockPos checkPos = pos.offset(dx, dy, dz);
+                {
+                    BlockPos checkPos = pos.offset(dx, 0, dz);
                     var state = world.getBlockState(checkPos);
                     var fluidState = world.getFluidState(checkPos);
                     if (fluidState.is(FluidTags.WATER) && fluidState.isSource()) {
