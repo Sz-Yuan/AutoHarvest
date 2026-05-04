@@ -9,15 +9,21 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.item.ItemStack;
 
-public class ItemRefillHelperoff {
+public class ItemRefillHelper {
+
+    private static final int OFF_HAND_SCREEN_SLOT = 45;
+
+    public static void refillMainHand() {
+        Minecraft client = Minecraft.getInstance();
+        client.execute(() -> doRefill(client, HandType.MAIN_HAND));
+    }
 
     public static void refillOffHand() {
         Minecraft client = Minecraft.getInstance();
-
-        client.execute(() -> doRefillOffHand(client));
+        client.execute(() -> doRefill(client, HandType.OFF_HAND));
     }
 
-    private static void doRefillOffHand(Minecraft client) {
+    private static void doRefill(Minecraft client, HandType handType) {
         if (client.player == null || client.level == null) return;
 
         if (client.screen != null && !(client.screen instanceof InventoryScreen)) {
@@ -27,29 +33,35 @@ public class ItemRefillHelperoff {
         LocalPlayer player = client.player;
         Inventory inv = player.getInventory();
 
-        refillOffHand(player, inv);
+        refill(player, inv, handType);
     }
 
-    private static void refillOffHand(LocalPlayer player, Inventory inv) {
+    private static void refill(LocalPlayer player, Inventory inv, HandType handType) {
         var WHITELIST = itemWhiteList.WHITELIST;
 
-        ItemStack offHandStack = player.getOffhandItem();
+        ItemStack targetStack;
+        int excludeSlot = -1;
 
-        if (offHandStack.isEmpty() || !WHITELIST.contains(offHandStack.getItem())) {
+        if (handType == HandType.MAIN_HAND) {
+            targetStack = player.getMainHandItem();
+            excludeSlot = inv.getSelectedSlot();
+        } else {
+            targetStack = player.getOffhandItem();
+        }
+
+        if (targetStack.isEmpty() || !WHITELIST.contains(targetStack.getItem())) {
             return;
         }
 
-        int sourcePlayerSlot = findMatchingStackInInventory(inv, offHandStack);
+        int sourcePlayerSlot = findMatchingStackInInventory(inv, targetStack, excludeSlot);
         if (sourcePlayerSlot == -1) return;
 
         var handler = player.containerMenu;
 
-        final int OFF_HAND_SCREEN_SLOT = 45;
-
-        int screenSourceSlot = sourcePlayerSlot;
-        if (sourcePlayerSlot >= 0 && sourcePlayerSlot <= 8) {
-            screenSourceSlot = sourcePlayerSlot + 36; // 快捷栏映射到 36-44
-        }
+        int screenSourceSlot = convertToScreenSlot(sourcePlayerSlot);
+        int screenTargetSlot = handType == HandType.MAIN_HAND
+                ? convertToScreenSlot(inv.getSelectedSlot())
+                : OFF_HAND_SCREEN_SLOT;
 
         clickSlot(handler, screenSourceSlot);
 
@@ -58,11 +70,18 @@ public class ItemRefillHelperoff {
             return;
         }
 
-        clickSlot(handler, OFF_HAND_SCREEN_SLOT);
+        clickSlot(handler, screenTargetSlot);
 
         if (!handler.getCarried().isEmpty()) {
             clickSlot(handler, screenSourceSlot);
         }
+    }
+
+    private static int convertToScreenSlot(int playerSlot) {
+        if (playerSlot >= 0 && playerSlot <= 8) {
+            return playerSlot + 36;
+        }
+        return playerSlot;
     }
 
     private static void clickSlot(AbstractContainerMenu handler, int slotIndex) {
@@ -80,13 +99,19 @@ public class ItemRefillHelperoff {
         }
     }
 
-    private static int findMatchingStackInInventory(Inventory inv, ItemStack targetStack) {
+    private static int findMatchingStackInInventory(Inventory inv, ItemStack targetStack, int excludeSlot) {
         for (int i = 0; i < 36; i++) {
+            if (i == excludeSlot) continue;
             ItemStack stack = inv.getItem(i);
             if (!stack.isEmpty() && ItemStack.isSameItem(stack, targetStack)) {
                 return i;
             }
         }
         return -1;
+    }
+
+    private enum HandType {
+        MAIN_HAND,
+        OFF_HAND
     }
 }

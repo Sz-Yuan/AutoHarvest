@@ -3,6 +3,7 @@ package kite.autoharvest.mode;
 import kite.autoharvest.config.AutoHarvestConfig;
 import kite.autoharvest.util.BoxUtil;
 import kite.autoharvest.util.InteractionHelper;
+import kite.autoharvest.util.ItemSlotHelper;
 import kite.autoharvest.util.WaterProximityChecker;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
@@ -48,7 +49,6 @@ public class HoeMode implements AutoMode {
         double radius = AutoHarvestConfig.getInstance().getRadius();
         int radiusInt = (int) Math.ceil(radius);
 
-        // 检查周围是否存在可锄地的方块
         boolean hasValidBlock = false;
         for (BlockPos pos : BlockPos.withinManhattan(BlockPos.containing(playerPos), radiusInt, radiusInt, radiusInt)) {
             if (BoxUtil.isInSphere(pos, playerPos, radius)) continue;
@@ -65,21 +65,12 @@ public class HoeMode implements AutoMode {
 
         InteractionHand usedHand = getHoeInHand(player);
         if (usedHand == null) {
-            int currentSlot = player.getInventory().getSelectedSlot();
-            int bestSlot = -1;
-            int minDistance = Integer.MAX_VALUE;
+            int bestSlot = ItemSlotHelper.findNearestSlot(player, HOES, true);
 
-            for (int i = 0; i < 9; i++) {
-                var stack = player.getInventory().getItem(i);
-                if (!stack.isEmpty() && HOES.contains(stack.getItem())) {
-                    int diff = Math.abs(i - currentSlot);
-                    int distance = Math.min(diff, 9 - diff);
-                    if (distance < minDistance) {
-                        minDistance = distance;
-                        bestSlot = i;
-                    }
-                }
+            if (bestSlot != -1 && AutoHarvestConfig.autoSwitchHotbar()) {
+                player.getInventory().setSelectedSlot(bestSlot);
             }
+
 
             if (bestSlot != -1 && AutoHarvestConfig.autoSwitchHotbar()) {
                 player.getInventory().setSelectedSlot(bestSlot);
@@ -114,6 +105,6 @@ public class HoeMode implements AutoMode {
 
     @Override
     public void onDisable() {
-        // 可选：重置状态（目前无状态，可留空）
+        // nothing
     }
 }

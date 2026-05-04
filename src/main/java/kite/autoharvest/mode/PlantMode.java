@@ -83,15 +83,9 @@ public class PlantMode implements AutoMode {
     );
 
     private static boolean hasSeed(LocalPlayer player, Set<Item> seedItem) {
-        if (seedItem.contains(player.getMainHandItem().getItem())) return true;
-        if (seedItem.contains(player.getOffhandItem().getItem())) return true;
-        for (int i = 0; i < 9; i++) {
-            if (seedItem.contains(player.getInventory().getItem(i).getItem())) {
-                return true;
-            }
-        }
-        return false;
+        return ItemSlotHelper.hasItem(player, seedItem);
     }
+
 
     @Override
     public void tick() {
@@ -100,10 +94,10 @@ public class PlantMode implements AutoMode {
             ItemStack mainHandStack = client.player.getMainHandItem();
             ItemStack offHandStack = client.player.getOffhandItem();
             if (!mainHandStack.isEmpty() && mainHandStack.getCount() < 64 && REFILLABLE_PLANT_ITEMS.contains(mainHandStack.getItem())) {
-                ItemRefillHelpermain.refillHands();
+                ItemRefillHelper.refillMainHand();
             }
             if (!offHandStack.isEmpty() && offHandStack.getCount() < 64 && REFILLABLE_PLANT_ITEMS.contains(offHandStack.getItem())) {
-                ItemRefillHelperoff.refillOffHand();
+                ItemRefillHelper.refillOffHand();
             }
         }
 
@@ -233,23 +227,9 @@ public class PlantMode implements AutoMode {
             return player.getOffhandItem().getItem();
         }
 
-        int currentSlot = player.getInventory().getSelectedSlot();
-        int bestSlot = -1;
-        int minDistance = Integer.MAX_VALUE;
-
-        for (int i = 0; i < 9; i++) {
-            ItemStack stack = player.getInventory().getItem(i);
-            if (!stack.isEmpty() && allowedSeeds.contains(stack.getItem())) {
-                int distance = Math.abs(i - currentSlot);
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    bestSlot = i;
-                }
-            }
-        }
-
-        return bestSlot != -1 ? player.getInventory().getItem(bestSlot).getItem() : null;
+        return ItemSlotHelper.findNearestItem(player, allowedSeeds);
     }
+
 
     @Override
     public String getName() {
@@ -258,6 +238,6 @@ public class PlantMode implements AutoMode {
 
     @Override
     public void onDisable() {
-        // 留空
+        //nothing
     }
 }

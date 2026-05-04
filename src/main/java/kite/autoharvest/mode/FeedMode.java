@@ -23,7 +23,6 @@ public class FeedMode implements AutoMode {
 
     private static final Map<UUID, Long> INTERACT_COOLDOWN = new HashMap<>();
 
-    //受限于无法准确获取服务器中生物的繁殖准确冷却时间，使用交互冷却优化性能
     private static long COOLDOWN_MS() {
         return AutoHarvestConfig.coolDown();
     }
@@ -72,7 +71,6 @@ public class FeedMode implements AutoMode {
         ItemStack offHand = player.getOffhandItem();
         boolean holdingShears = mainHand.is(Items.SHEARS) || offHand.is(Items.SHEARS);
 
-        // 如果手持剪刀：仅剪羊毛，跳过喂食
         if (holdingShears) {
             double radius = AutoHarvestConfig.getInstance().getRadius();
             AABB searchBox = BoxUtil.createSearchBox(playerPos, radius);
@@ -97,10 +95,10 @@ public class FeedMode implements AutoMode {
             ItemStack off = player.getOffhandItem();
 
             if (!main.isEmpty() && isBreedItem(main.getItem()) && main.getCount() < 64) {
-                ItemRefillHelpermain.refillHands();
+                ItemRefillHelper.refillMainHand();
             }
             if (!off.isEmpty() && isBreedItem(off.getItem()) && off.getCount() < 64) {
-                ItemRefillHelperoff.refillOffHand();
+                ItemRefillHelper.refillOffHand();
             }
         }
 
@@ -174,23 +172,9 @@ public class FeedMode implements AutoMode {
             return player.getOffhandItem().getItem();
         }
 
-        int currentSlot = player.getInventory().getSelectedSlot();
-        int bestSlot = -1;
-        int minDistance = Integer.MAX_VALUE;
-
-        for (int i = 0; i < 9; i++) {
-            ItemStack stack = player.getInventory().getItem(i);
-            if (!stack.isEmpty() && validFoods.contains(stack.getItem())) {
-                int distance = Math.abs(i - currentSlot);
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    bestSlot = i;
-                }
-            }
-        }
-
-        return bestSlot != -1 ? player.getInventory().getItem(bestSlot).getItem() : null;
+        return ItemSlotHelper.findNearestItem(player, validFoods);
     }
+
 
     @Override
     public String getName() {
@@ -199,6 +183,6 @@ public class FeedMode implements AutoMode {
 
     @Override
     public void onDisable() {
-        // 留空
+        //nothing
     }
 }

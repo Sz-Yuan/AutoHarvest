@@ -46,10 +46,10 @@ public class BonemealMode implements AutoMode {
             ItemStack main = player.getMainHandItem();
             ItemStack off = player.getOffhandItem();
             if (!main.isEmpty() && main.getItem() == Items.BONE_MEAL && main.getCount() < 64) {
-                ItemRefillHelpermain.refillHands();
+                ItemRefillHelper.refillMainHand();
             }
             if (!off.isEmpty() && off.getItem() == Items.BONE_MEAL && off.getCount() < 64) {
-                ItemRefillHelperoff.refillOffHand();
+                ItemRefillHelper.refillOffHand();
             }
         }
 
@@ -102,19 +102,7 @@ public class BonemealMode implements AutoMode {
             return true;
         }
 
-        int currentSlot = player.getInventory().getSelectedSlot();
-        int bestSlot = -1;
-        int minDistance = Integer.MAX_VALUE;
-
-        for (int i = 0; i < 9; i++) {
-            if (player.getInventory().getItem(i).getItem() == Items.BONE_MEAL) {
-                int dist = Math.abs(i - currentSlot);
-                if (dist < minDistance) {
-                    minDistance = dist;
-                    bestSlot = i;
-                }
-            }
-        }
+        int bestSlot = ItemSlotHelper.findNearestSlot(player, Items.BONE_MEAL);
 
         if (bestSlot != -1) {
             player.getInventory().setSelectedSlot(bestSlot);
@@ -132,6 +120,6 @@ public class BonemealMode implements AutoMode {
 
     @Override
     public void onDisable() {
-        // 留空
+        //nothing
     }
 }
