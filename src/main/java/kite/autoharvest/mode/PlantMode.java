@@ -86,7 +86,6 @@ public class PlantMode implements AutoMode {
         return ItemSlotHelper.hasItem(player, seedItem);
     }
 
-
     @Override
     public void tick() {
         Minecraft client = Minecraft.getInstance();
@@ -194,21 +193,8 @@ public class PlantMode implements AutoMode {
                 }
                 return;
             }
-            int currentSlot = player.getInventory().getSelectedSlot();
-            int bestSlot = -1;
-            int minDistance = Integer.MAX_VALUE;
-
-            for (int i = 0; i < 9; i++) {
-                ItemStack stack = player.getInventory().getItem(i);
-                if (!stack.isEmpty() && stack.getItem() == targetSeed) {
-                    int distance = Math.abs(i - currentSlot);
-                    if (distance < minDistance) {
-                        minDistance = distance;
-                        bestSlot = i;
-                    }
-                }
-            }
-
+            int bestSlot = ItemSlotHelper.findNearestSlot(player, targetSeed);
+            
             if (bestSlot != -1) {
                 if (AutoHarvestConfig.autoSwitchHotbar()) {
                     player.getInventory().setSelectedSlot(bestSlot);
@@ -226,7 +212,6 @@ public class PlantMode implements AutoMode {
         if (allowedSeeds.contains(player.getOffhandItem().getItem())) {
             return player.getOffhandItem().getItem();
         }
-
         return ItemSlotHelper.findNearestItem(player, allowedSeeds);
     }
 

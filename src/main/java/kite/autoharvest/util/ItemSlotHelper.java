@@ -9,10 +9,6 @@ import java.util.function.Predicate;
 
 public class ItemSlotHelper {
 
-    public static int findNearestSlot(LocalPlayer player, Predicate<ItemStack> matcher) {
-        return findNearestSlot(player, matcher, false);
-    }
-
     public static int findNearestSlot(LocalPlayer player, Predicate<ItemStack> matcher, boolean useCircularDistance) {
         int currentSlot = player.getInventory().getSelectedSlot();
         int bestSlot = -1;
@@ -48,33 +44,15 @@ public class ItemSlotHelper {
         return findNearestSlot(player, stack -> allowedItems.contains(stack.getItem()), useCircularDistance);
     }
 
-    public static Item findNearestItem(LocalPlayer player, Predicate<ItemStack> matcher) {
-        int slot = findNearestSlot(player, matcher);
-        return slot != -1 ? player.getInventory().getItem(slot).getItem() : null;
-    }
-
-    public static Item findNearestItem(LocalPlayer player, Item targetItem) {
-        int slot = findNearestSlot(player, targetItem);
-        return slot != -1 ? player.getInventory().getItem(slot).getItem() : null;
-    }
-
     public static Item findNearestItem(LocalPlayer player, Set<Item> allowedItems) {
         int slot = findNearestSlot(player, allowedItems);
         return slot != -1 ? player.getInventory().getItem(slot).getItem() : null;
     }
 
-    public static boolean hasItem(LocalPlayer player, Predicate<ItemStack> matcher) {
-        if (matcher.test(player.getMainHandItem())) return true;
-        if (matcher.test(player.getOffhandItem())) return true;
-        return findNearestSlot(player, matcher) != -1;
-    }
-
-    public static boolean hasItem(LocalPlayer player, Item targetItem) {
-        return hasItem(player, stack -> stack.getItem() == targetItem);
-    }
-
     public static boolean hasItem(LocalPlayer player, Set<Item> allowedItems) {
-        return hasItem(player, stack -> allowedItems.contains(stack.getItem()));
+        if (allowedItems.contains(player.getMainHandItem().getItem())) return true;
+        if (allowedItems.contains(player.getOffhandItem().getItem())) return true;
+        return findNearestSlot(player, allowedItems) != -1;
     }
 
     private static int calculateDistance(int slot1, int slot2, boolean circular) {

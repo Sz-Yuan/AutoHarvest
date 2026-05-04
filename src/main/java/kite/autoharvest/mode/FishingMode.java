@@ -2,6 +2,7 @@ package kite.autoharvest.mode;
 
 import kite.autoharvest.config.AutoHarvestConfig;
 import kite.autoharvest.util.InteractionHelper;
+import kite.autoharvest.util.ItemSlotHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
@@ -91,12 +92,7 @@ public class FishingMode implements AutoMode {
     }
 
     private int findFishingRodSlot(LocalPlayer player) {
-        for (int i = 0; i < 9; i++) {
-            if (player.getInventory().getItem(i).is(Items.FISHING_ROD)) {
-                return i;
-            }
-        }
-        return -1;
+        return ItemSlotHelper.findNearestSlot(player, Items.FISHING_ROD);
     }
 
     private void updateStationaryState(FishingHook bobber, boolean allowStuckDetection, long currentTime) {

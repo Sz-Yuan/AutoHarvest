@@ -152,14 +152,13 @@ public class FeedMode implements AutoMode {
             return false;
         }
 
-        for (int i = 0; i < 9; i++) {
-            ItemStack stack = player.getInventory().getItem(i);
-            if (!stack.isEmpty() && stack.getItem() == bestFood) {
-                player.getInventory().setSelectedSlot(i);
-                InteractionHelper.interactEntity(player, target, InteractionHand.MAIN_HAND);
-                return true;
-            }
+        int bestSlot = ItemSlotHelper.findNearestSlot(player, bestFood);
+        if (bestSlot != -1) {
+            player.getInventory().setSelectedSlot(bestSlot);
+            InteractionHelper.interactEntity(player, target, InteractionHand.MAIN_HAND);
+            return true;
         }
+
 
         return false;
     }
