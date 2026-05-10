@@ -153,7 +153,7 @@ public class FeedMode implements AutoMode {
         }
 
         int bestSlot = ItemSlotHelper.findNearestSlot(player, bestFood);
-        if (bestSlot != -1) {
+        if (bestSlot != -1 && AutoHarvestConfig.autoSwitchHotbar()) {
             player.getInventory().setSelectedSlot(bestSlot);
             InteractionHelper.interactEntity(player, target, InteractionHand.MAIN_HAND);
             return true;

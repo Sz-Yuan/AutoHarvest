@@ -7,7 +7,6 @@ import kite.autoharvest.util.ItemSlotHelper;
 import kite.autoharvest.util.WaterProximityChecker;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -47,45 +46,35 @@ public class HoeMode implements AutoMode {
         if (playerPos == null) return;
 
         double radius = AutoHarvestConfig.getInstance().getRadius();
-        int radiusInt = (int) Math.ceil(radius);
 
-        boolean hasValidBlock = false;
-        for (BlockPos pos : BlockPos.withinManhattan(BlockPos.containing(playerPos), radiusInt, radiusInt, radiusInt)) {
-            if (BoxUtil.isInSphere(pos, playerPos, radius)) continue;
-            if (!HOEABLE_BLOCKS.contains(world.getBlockState(pos).getBlock())) continue;
-            if (!world.getBlockState(pos.above()).isAir()) continue;
-            if (AutoHarvestConfig.skipWater() && WaterProximityChecker.isWithinHydrationRange(world, pos)) continue;
-
-            hasValidBlock = true;
-            break;
-        }
-        if (!hasValidBlock) {
+        boolean[] hasValidBlock = {false};
+        BoxUtil.forEachBlockInRange(playerPos, radius, pos -> {
+            if (!HOEABLE_BLOCKS.contains(world.getBlockState(pos).getBlock())) return false;
+            if (!world.getBlockState(pos.above()).isAir()) return false;
+            if (AutoHarvestConfig.skipWater() && WaterProximityChecker.hasNoWaterNearby(world, pos)) return false;
+            hasValidBlock[0] = true;
+            return true;
+        });
+        if (!hasValidBlock[0]) {
             return;
         }
 
         InteractionHand usedHand = getHoeInHand(player);
         if (usedHand == null) {
             int bestSlot = ItemSlotHelper.findNearestSlot(player, HOES, true);
-
-            if (bestSlot != -1 && AutoHarvestConfig.autoSwitchHotbar()) {
-                player.getInventory().setSelectedSlot(bestSlot);
-            }
-
-
             if (bestSlot != -1 && AutoHarvestConfig.autoSwitchHotbar()) {
                 player.getInventory().setSelectedSlot(bestSlot);
             }
             return;
         }
-        for (BlockPos pos : BlockPos.withinManhattan(BlockPos.containing(playerPos), radiusInt, radiusInt, radiusInt)) {
-            if (BoxUtil.isInSphere(pos, playerPos, radius)) continue;
-            if (!HOEABLE_BLOCKS.contains(world.getBlockState(pos).getBlock())) continue;
-            if (!world.getBlockState(pos.above()).isAir()) continue;
-            if (AutoHarvestConfig.skipWater() && WaterProximityChecker.isWithinHydrationRange(world, pos)) continue;
+        BoxUtil.forEachBlockInRange(playerPos, radius, pos -> {
+            if (!HOEABLE_BLOCKS.contains(world.getBlockState(pos).getBlock())) return false;
+            if (!world.getBlockState(pos.above()).isAir()) return false;
+            if (AutoHarvestConfig.skipWater() && WaterProximityChecker.hasNoWaterNearby(world, pos)) return false;
 
             InteractionHelper.interactBlock(player, pos, usedHand, Direction.UP);
-            return;
-        }
+            return true;
+        });
     }
 
     private InteractionHand getHoeInHand(LocalPlayer player) {

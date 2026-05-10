@@ -3,7 +3,7 @@ package kite.autoharvest;
 import com.mojang.blaze3d.platform.InputConstants;
 import kite.autoharvest.command.ModeCommand;
 import kite.autoharvest.config.AutoHarvestConfig;
-import kite.autoharvest.config.modeEnum;
+import kite.autoharvest.config.ModeEnum;
 import kite.autoharvest.manager.ModeManager;
 import kite.autoharvest.mode.*;
 import me.shedaniel.autoconfig.AutoConfig;
@@ -29,17 +29,18 @@ public class AutoHarvest implements ClientModInitializer {
     public static final KeyMapping TOGGLE_KEY = new KeyMapping("key.autoharvest.toggle", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_H, AUTOHARVEST_CATEGORY);
     public static final KeyMapping CYCLE_MODE_KEY = new KeyMapping("key.autoharvest.cycle", InputConstants.Type.KEYSYM, InputConstants.UNKNOWN.getValue(), AUTOHARVEST_CATEGORY);
 
-    private static modeEnum getNextMode(modeEnum current) {
-        return switch (current) {
-            case weed -> modeEnum.plant;
-            case plant -> modeEnum.harvest;
-            case harvest -> modeEnum.farmer;
-            case farmer -> modeEnum.bonemeal;
-            case bonemeal -> modeEnum.feed;
-            case feed -> modeEnum.fishing;
-            case fishing -> modeEnum.hoe;
-            case hoe -> modeEnum.weed;
-        };
+    private static final ModeEnum[] CYCLE_ORDER = {
+            ModeEnum.weed, ModeEnum.plant, ModeEnum.harvest, ModeEnum.farmer,
+            ModeEnum.bonemeal, ModeEnum.feed, ModeEnum.fishing, ModeEnum.hoe
+    };
+
+    private static ModeEnum getNextMode(ModeEnum current) {
+        for (int i = 0; i < CYCLE_ORDER.length; i++) {
+            if (CYCLE_ORDER[i] == current) {
+                return CYCLE_ORDER[(i + 1) % CYCLE_ORDER.length];
+            }
+        }
+        return CYCLE_ORDER[0];
     }
 
     public static final KeyMapping WEED_KEY = createModeKey("weed");
@@ -73,61 +74,46 @@ public class AutoHarvest implements ClientModInitializer {
         ClientPlayConnectionEvents.DISCONNECT.register(((handler, client) -> ModeManager.INSTANCE.clearMode()));
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (CYCLE_MODE_KEY.consumeClick()) {
-                modeEnum current = AutoHarvestConfig.getInstance().thecurrentMode;
-                modeEnum next = getNextMode(current);
-                switch (next) {
-                    case weed -> setModeAndNotify(new WeedMode(), modeEnum.weed);
-                    case plant -> setModeAndNotify(new PlantMode(), modeEnum.plant);
-                    case harvest -> setModeAndNotify(new HarvestMode(), modeEnum.harvest);
-                    case farmer -> setModeAndNotify(CompositeMode.farmer(), modeEnum.farmer);
-                    case bonemeal -> setModeAndNotify(new BonemealMode(), modeEnum.bonemeal);
-                    case feed -> setModeAndNotify(new FeedMode(), modeEnum.feed);
-                    case fishing -> setModeAndNotify(new FishingMode(), modeEnum.fishing);
-                    case hoe -> setModeAndNotify(new HoeMode(), modeEnum.hoe);
-                }
+                ModeEnum next = getNextMode(AutoHarvestConfig.getInstance().thecurrentMode);
+                switchTo(next);
             }
             if (TOGGLE_KEY.consumeClick()) {
                 ModeManager.INSTANCE.toggle();
             }
             if (WEED_KEY.consumeClick()) {
-                setModeAndNotify(new WeedMode(), modeEnum.weed);
+                switchTo(ModeEnum.weed);
             } else if (PLANT_KEY.consumeClick()) {
-                setModeAndNotify(new PlantMode(), modeEnum.plant);
+                switchTo(ModeEnum.plant);
             } else if (HARVEST_KEY.consumeClick()) {
-                setModeAndNotify(new HarvestMode(), modeEnum.harvest);
+                switchTo(ModeEnum.harvest);
             } else if (FARMER_KEY.consumeClick()) {
-                setModeAndNotify(CompositeMode.farmer(), modeEnum.farmer);
+                switchTo(ModeEnum.farmer);
             } else if (BONEMEAL_KEY.consumeClick()) {
-                setModeAndNotify(new BonemealMode(), modeEnum.bonemeal);
+                switchTo(ModeEnum.bonemeal);
             } else if (FEED_KEY.consumeClick()) {
-                setModeAndNotify(new FeedMode(), modeEnum.feed);
+                switchTo(ModeEnum.feed);
             } else if (FISHING_KEY.consumeClick()) {
-                setModeAndNotify(new FishingMode(), modeEnum.fishing);
+                switchTo(ModeEnum.fishing);
             } else if (HOE_KEY.consumeClick()) {
-                setModeAndNotify(new HoeMode(), modeEnum.hoe);
+                switchTo(ModeEnum.hoe);
             }
             ModeManager.INSTANCE.tick();
         });
     }
 
-    private static void setModeAndNotify(AutoMode mode, modeEnum configEnum) {
+    private static void switchTo(ModeEnum configEnum) {
+        setModeAndNotify(configEnum.setMode(), configEnum);
+    }
+
+    private static void setModeAndNotify(AutoMode mode, ModeEnum configEnum) {
         var player = Minecraft.getInstance().player;
         ModeManager.INSTANCE.setCurrentMode(mode);
         AutoHarvestConfig.getInstance().thecurrentMode = configEnum;
         AutoHarvestConfig.save();
 
         if (player != null) {
-            String modeName = switch (configEnum) {
-                case weed -> Component.translatable("autoharvest.mode.weed").getString();
-                case plant -> Component.translatable("autoharvest.mode.plant").getString();
-                case harvest -> Component.translatable("autoharvest.mode.harvest").getString();
-                case farmer -> CompositeMode.farmmerode_string();
-                case bonemeal -> Component.translatable("autoharvest.mode.bonemeal").getString();
-                case feed -> Component.translatable("autoharvest.mode.feed").getString();
-                case fishing -> Component.translatable("autoharvest.mode.fishing").getString();
-                case hoe -> Component.translatable("autoharvest.mode.hoeing").getString();
-            };
-            player.sendSystemMessage(Component.literal(Component.translatable("autoharvest.mode.switch").getString() + modeName));
+            player.sendSystemMessage(Component.literal(
+                    Component.translatable("autoharvest.mode.switch").getString() + mode.getName()));
         }
     }
 }

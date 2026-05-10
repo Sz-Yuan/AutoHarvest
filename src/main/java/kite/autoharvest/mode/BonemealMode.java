@@ -16,7 +16,6 @@ import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.StemBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Set;
@@ -54,24 +53,17 @@ public class BonemealMode implements AutoMode {
         }
 
         double radius = AutoHarvestConfig.getInstance().getRadius();
-        AABB searchBox = BoxUtil.createSearchBox(playerPos, radius);
-        int radiusInt = (int) Math.ceil(radius);
 
-        for (BlockPos pos : BlockPos.withinManhattan(BlockPos.containing(playerPos), radiusInt, radiusInt, radiusInt)) {
-            if (!searchBox.contains(pos.getCenter())) continue;
-            if (BoxUtil.isInSphere(pos, playerPos, radius)) continue;
-
+        BoxUtil.forEachBlockInRange(playerPos, radius, pos -> {
             BlockState state = world.getBlockState(pos);
             Block block = state.getBlock();
 
-            if (!BONEMEAL_WHITELIST.contains(block)) continue;
+            if (!BONEMEAL_WHITELIST.contains(block)) return false;
 
-            if (!isNotFullyGrown(state, block)) continue;
+            if (!isNotFullyGrown(state, block)) return false;
 
-            if (tryUseBonemeal(player, pos)) {
-                return;
-            }
-        }
+            return tryUseBonemeal(player, pos);
+        });
     }
 
     private boolean isNotFullyGrown(BlockState state, Block block) {
@@ -104,7 +96,7 @@ public class BonemealMode implements AutoMode {
 
         int bestSlot = ItemSlotHelper.findNearestSlot(player, Items.BONE_MEAL);
 
-        if (bestSlot != -1) {
+        if (bestSlot != -1 && AutoHarvestConfig.autoSwitchHotbar()) {
             player.getInventory().setSelectedSlot(bestSlot);
             InteractionHelper.interactBlock(player, pos, InteractionHand.MAIN_HAND, Direction.UP);
             return true;

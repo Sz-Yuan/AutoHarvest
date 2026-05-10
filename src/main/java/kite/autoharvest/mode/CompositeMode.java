@@ -26,10 +26,6 @@ public class CompositeMode implements AutoMode {
                 .collect(Collectors.joining(" + "));
     }
 
-    public static String farmmerode_string() {
-        return farmer().getName();
-    }
-
     @Override
     public void onDisable() {
         modes.forEach(AutoMode::onDisable);

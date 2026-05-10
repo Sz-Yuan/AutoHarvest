@@ -37,7 +37,7 @@ public final class WaterProximityChecker {
         return false;
     }
 
-    public static boolean isWithinHydrationRange(Level world, BlockPos pos) {
+    public static boolean hasNoWaterNearby(Level world, BlockPos pos) {
         for (int dx = -4; dx <= 4; dx++) {
             for (int dz = -4; dz <= 4; dz++) {
                 {

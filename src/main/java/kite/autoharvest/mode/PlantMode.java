@@ -14,7 +14,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashSet;
@@ -34,7 +33,11 @@ public class PlantMode implements AutoMode {
     private static final Item SUGAR_CANE_ITEM = Items.SUGAR_CANE;
     private static final Item BAMBOO_ITEM = Items.BAMBOO;
     private static final Item COCOA_BEANS_ITEM = Items.COCOA_BEANS;
-    private static final Item SWEET_BERRIES_ITEM = Items.SWEET_BERRIES;
+    private static final Set<Item> SUGAR_CANE_SET = Set.of(Items.SUGAR_CANE);
+    private static final Set<Item> BAMBOO_SET = Set.of(Items.BAMBOO);
+    private static final Set<Item> NETHER_WART_SET = Set.of(Items.NETHER_WART);
+    private static final Set<Item> COCOA_BEANS_SET = Set.of(Items.COCOA_BEANS);
+    private static final Set<Item> SWEET_BERRIES_SET = Set.of(Items.SWEET_BERRIES);
 
     private static final Set<Block> SUGARCANE_BASE_BLOCKS = Set.of(
             Blocks.GRASS_BLOCK,
@@ -108,14 +111,9 @@ public class PlantMode implements AutoMode {
         if (playerPos == null) return;
 
         double radius = AutoHarvestConfig.getInstance().getRadius();
-        AABB searchBox = BoxUtil.createSearchBox(playerPos, radius);
-        int radiusInt = (int) Math.ceil(radius);
 
-        for (BlockPos pos : BlockPos.withinManhattan(BlockPos.containing(playerPos), radiusInt, radiusInt, radiusInt)) {
-            if (!searchBox.contains(pos.getCenter())) continue;
-            if (BoxUtil.isInSphere(pos, playerPos, radius)) continue;
-
-            if (!world.getBlockState(pos).isAir()) continue;
+        BoxUtil.forEachBlockInRange(playerPos, radius, pos -> {
+            if (!world.getBlockState(pos).isAir()) return false;
 
             BlockPos basePos = pos.below();
             Block baseBlock = world.getBlockState(basePos).getBlock();
@@ -123,9 +121,9 @@ public class PlantMode implements AutoMode {
             boolean canPlantCrop = (baseBlock == Blocks.FARMLAND) && hasSeed(player, CROP_SEEDS);
             boolean canPlantSugarcane = SUGARCANE_BASE_BLOCKS.contains(baseBlock)
                     && WaterProximityChecker.isAdjacentToSourceWaterHorizontally(world, basePos)
-                    && hasSeed(player, Set.of(SUGAR_CANE_ITEM));
+                    && hasSeed(player, SUGAR_CANE_SET);
             boolean canPlantNetherWart = (baseBlock == Blocks.SOUL_SAND);
-            boolean canPlantBamboo = SUGARCANE_BASE_BLOCKS.contains(baseBlock) && hasSeed(player, Set.of(BAMBOO_ITEM));
+            boolean canPlantBamboo = SUGARCANE_BASE_BLOCKS.contains(baseBlock) && hasSeed(player, BAMBOO_SET);
             Direction cocoaFacing = null;
             BlockPos cocoaLogPos = null;
 
@@ -143,15 +141,15 @@ public class PlantMode implements AutoMode {
             Item targetSeed = null;
 
             if (canPlantNetherWart) {
-                targetSeed = findBestSeed(player, Set.of(NETHER_WART_ITEM));
+                targetSeed = findBestSeed(player, NETHER_WART_SET);
             } else if (canPlantCocoa) {
-                targetSeed = findBestSeed(player, Set.of(COCOA_BEANS_ITEM));
+                targetSeed = findBestSeed(player, COCOA_BEANS_SET);
             } else if (canPlantSugarcane) {
-                targetSeed = findBestSeed(player, Set.of(SUGAR_CANE_ITEM));
+                targetSeed = findBestSeed(player, SUGAR_CANE_SET);
             } else if (canPlantBamboo) {
                 int bambooSpacing = AutoHarvestConfig.bambooRadius();
                 if (bambooSpacing == 0) {
-                    targetSeed = findBestSeed(player, Set.of(BAMBOO_ITEM));
+                    targetSeed = findBestSeed(player, BAMBOO_SET);
                 }
                 boolean hasNearbyBamboo = false;
                 if (bambooSpacing > 0) {
@@ -168,15 +166,15 @@ public class PlantMode implements AutoMode {
                     }
                 }
                 if (!hasNearbyBamboo) {
-                    targetSeed = findBestSeed(player, Set.of(BAMBOO_ITEM));
+                    targetSeed = findBestSeed(player, BAMBOO_SET);
                 }
             } else if (canPlantCrop) {
                 targetSeed = findBestSeed(player, CROP_SEEDS);
             } else if (canPlantSweetBerries) {
-                targetSeed = findBestSeed(player, Set.of(SWEET_BERRIES_ITEM));
+                targetSeed = findBestSeed(player, SWEET_BERRIES_SET);
             }
 
-            if (targetSeed == null) continue;
+            if (targetSeed == null) return false;
 
             InteractionHand usedHand = null;
             if (player.getMainHandItem().getItem() == targetSeed) {
@@ -191,18 +189,19 @@ public class PlantMode implements AutoMode {
                 } else {
                     InteractionHelper.interactBlock(player, basePos, usedHand, Direction.UP);
                 }
-                return;
+                return true;
             }
             int bestSlot = ItemSlotHelper.findNearestSlot(player, targetSeed);
-            
+
             if (bestSlot != -1) {
                 if (AutoHarvestConfig.autoSwitchHotbar()) {
                     player.getInventory().setSelectedSlot(bestSlot);
                 }
                 InteractionHelper.interactBlock(player, basePos, InteractionHand.MAIN_HAND, Direction.UP);
-                return;
+                return true;
             }
-        }
+            return false;
+        });
     }
 
     private Item findBestSeed(LocalPlayer player, Set<Item> allowedSeeds) {

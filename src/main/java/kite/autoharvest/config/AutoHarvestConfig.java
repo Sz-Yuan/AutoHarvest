@@ -18,7 +18,7 @@ public class AutoHarvestConfig implements ConfigData {
 
     @ConfigEntry.Gui.Tooltip
     @ConfigEntry.Gui.EnumHandler
-    public modeEnum thecurrentMode = modeEnum.plant;
+    public ModeEnum thecurrentMode = ModeEnum.plant;
 
     @ConfigEntry.Gui.Tooltip
     public boolean enableRefill = true;
@@ -70,7 +70,7 @@ public class AutoHarvestConfig implements ConfigData {
         return getInstance().getRadius();
     }
 
-    public static modeEnum thecurrentMode() {
+    public static ModeEnum thecurrentMode() {
         return getInstance().thecurrentMode;
     }
 
