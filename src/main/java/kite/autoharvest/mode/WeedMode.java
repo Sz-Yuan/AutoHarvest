@@ -5,7 +5,6 @@ import kite.autoharvest.util.BoxUtil;
 import kite.autoharvest.util.InteractionHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.*;
