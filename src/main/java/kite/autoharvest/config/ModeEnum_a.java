@@ -2,7 +2,7 @@ package kite.autoharvest.config;
 
 import kite.autoharvest.mode.*;
 
-public enum ModeEnum {
+public enum ModeEnum_a {
     weed {
         @Override
         public AutoMode setMode() {

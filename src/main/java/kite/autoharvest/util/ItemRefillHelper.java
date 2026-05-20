@@ -1,6 +1,6 @@
 package kite.autoharvest.util;
 
-import kite.autoharvest.util.whitelist.ItemWhitelist;
+import kite.autoharvest.util.whitelist.ItemWhitelist_a;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
@@ -37,7 +37,7 @@ public class ItemRefillHelper {
     }
 
     private static void refill(LocalPlayer player, Inventory inv, HandType handType) {
-        var WHITELIST = ItemWhitelist.WHITELIST;
+        var WHITELIST = ItemWhitelist_a.WHITELIST;
 
         ItemStack targetStack;
         int excludeSlot = -1;

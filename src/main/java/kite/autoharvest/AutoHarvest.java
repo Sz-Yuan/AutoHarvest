@@ -3,7 +3,7 @@ package kite.autoharvest;
 import com.mojang.blaze3d.platform.InputConstants;
 import kite.autoharvest.command.ModeCommand;
 import kite.autoharvest.config.AutoHarvestConfig;
-import kite.autoharvest.config.ModeEnum;
+import kite.autoharvest.config.ModeEnum_a;
 import kite.autoharvest.manager.ModeManager;
 import kite.autoharvest.mode.*;
 import me.shedaniel.autoconfig.AutoConfig;
@@ -29,12 +29,12 @@ public class AutoHarvest implements ClientModInitializer {
     public static final KeyMapping TOGGLE_KEY = new KeyMapping("key.autoharvest.toggle", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_H, AUTOHARVEST_CATEGORY);
     public static final KeyMapping CYCLE_MODE_KEY = new KeyMapping("key.autoharvest.cycle", InputConstants.Type.KEYSYM, InputConstants.UNKNOWN.getValue(), AUTOHARVEST_CATEGORY);
 
-    private static final ModeEnum[] CYCLE_ORDER = {
-            ModeEnum.weed, ModeEnum.plant, ModeEnum.harvest, ModeEnum.farmer,
-            ModeEnum.bonemeal, ModeEnum.feed, ModeEnum.fishing, ModeEnum.hoe
+    private static final ModeEnum_a[] CYCLE_ORDER = {
+            ModeEnum_a.weed, ModeEnum_a.plant, ModeEnum_a.harvest, ModeEnum_a.farmer,
+            ModeEnum_a.bonemeal, ModeEnum_a.feed, ModeEnum_a.fishing, ModeEnum_a.hoe
     };
 
-    private static ModeEnum getNextMode(ModeEnum current) {
+    private static ModeEnum_a getNextMode(ModeEnum_a current) {
         for (int i = 0; i < CYCLE_ORDER.length; i++) {
             if (CYCLE_ORDER[i] == current) {
                 return CYCLE_ORDER[(i + 1) % CYCLE_ORDER.length];
@@ -74,38 +74,38 @@ public class AutoHarvest implements ClientModInitializer {
         ClientPlayConnectionEvents.DISCONNECT.register(((handler, client) -> ModeManager.INSTANCE.clearMode()));
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (CYCLE_MODE_KEY.consumeClick()) {
-                ModeEnum next = getNextMode(AutoHarvestConfig.getInstance().thecurrentMode);
+                ModeEnum_a next = getNextMode(AutoHarvestConfig.getInstance().thecurrentMode);
                 switchTo(next);
             }
             if (TOGGLE_KEY.consumeClick()) {
                 ModeManager.INSTANCE.toggle();
             }
             if (WEED_KEY.consumeClick()) {
-                switchTo(ModeEnum.weed);
+                switchTo(ModeEnum_a.weed);
             } else if (PLANT_KEY.consumeClick()) {
-                switchTo(ModeEnum.plant);
+                switchTo(ModeEnum_a.plant);
             } else if (HARVEST_KEY.consumeClick()) {
-                switchTo(ModeEnum.harvest);
+                switchTo(ModeEnum_a.harvest);
             } else if (FARMER_KEY.consumeClick()) {
-                switchTo(ModeEnum.farmer);
+                switchTo(ModeEnum_a.farmer);
             } else if (BONEMEAL_KEY.consumeClick()) {
-                switchTo(ModeEnum.bonemeal);
+                switchTo(ModeEnum_a.bonemeal);
             } else if (FEED_KEY.consumeClick()) {
-                switchTo(ModeEnum.feed);
+                switchTo(ModeEnum_a.feed);
             } else if (FISHING_KEY.consumeClick()) {
-                switchTo(ModeEnum.fishing);
+                switchTo(ModeEnum_a.fishing);
             } else if (HOE_KEY.consumeClick()) {
-                switchTo(ModeEnum.hoe);
+                switchTo(ModeEnum_a.hoe);
             }
             ModeManager.INSTANCE.tick();
         });
     }
 
-    private static void switchTo(ModeEnum configEnum) {
+    private static void switchTo(ModeEnum_a configEnum) {
         setModeAndNotify(configEnum.setMode(), configEnum);
     }
 
-    private static void setModeAndNotify(AutoMode mode, ModeEnum configEnum) {
+    private static void setModeAndNotify(AutoMode mode, ModeEnum_a configEnum) {
         var player = Minecraft.getInstance().player;
         ModeManager.INSTANCE.setCurrentMode(mode);
         AutoHarvestConfig.getInstance().thecurrentMode = configEnum;
