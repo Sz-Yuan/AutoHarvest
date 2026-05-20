@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ItemWhitelist_a {
+public class ItemWhitelist {
     public static final Set<Item> WHITELIST;
 
     static {

@@ -5,7 +5,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import kite.autoharvest.config.AutoHarvestConfig;
-import kite.autoharvest.config.ModeEnum_a;
+import kite.autoharvest.config.ModeEnum;
 import kite.autoharvest.manager.ModeManager;
 import kite.autoharvest.mode.*;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
@@ -60,9 +60,9 @@ public class ModeCommand {
         LocalPlayer player = Minecraft.getInstance().player;
         String modeName = StringArgumentType.getString(context, "mode").toLowerCase();
 
-        ModeEnum_a mode;
+        ModeEnum mode;
         try {
-            mode = ModeEnum_a.valueOf(modeName);
+            mode = ModeEnum.valueOf(modeName);
         } catch (IllegalArgumentException e) {
             if (player != null) {
                 player.sendSystemMessage(Component.translatable("autoharvest.mode.error"));
