@@ -54,7 +54,7 @@ public class HarvestMode implements AutoMode {
         int radiusInt = (int) Math.ceil(radius);
 
         for (BlockPos pos : BlockPos.withinManhattan(BlockPos.containing(playerPos), radiusInt, radiusInt, radiusInt)) {
-            if (!searchBox.contains(pos.getCenter())) continue;
+            if (!searchBox.contains(Vec3.atCenterOf(pos))) continue;
             if (BoxUtil.isOutsideSphere(pos, playerPos, radius)) continue;
 
             BlockState state = world.getBlockState(pos);

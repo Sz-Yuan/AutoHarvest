@@ -44,7 +44,7 @@ public class Animals {
     private static Set<Item> getFlowerItems() {
         Set<Item> flowers = new HashSet<>();
         for (Item item : BuiltInRegistries.ITEM) {
-            if (new ItemStack(item).is(ItemTags.FLOWERS)) {
+            if (new ItemStack(item).is(ItemTags.BEE_FOOD)) {
                 flowers.add(item);
             }
         }
