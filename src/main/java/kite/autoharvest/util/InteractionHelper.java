@@ -19,7 +19,7 @@ public final class InteractionHelper {
     public static void interactBlock(LocalPlayer player, BlockPos blockPos, InteractionHand hand, Direction side) {
         Minecraft client = Minecraft.getInstance();
         if (client.gameMode == null) return;
-        Vec3 hitPos = blockPos.getCenter();
+        Vec3 hitPos = Vec3.atCenterOf(blockPos);
         BlockHitResult hitResult = new BlockHitResult(hitPos, side, blockPos, false);
         client.gameMode.useItemOn(player, hand, hitResult);
     }

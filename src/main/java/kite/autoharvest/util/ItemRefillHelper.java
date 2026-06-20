@@ -26,7 +26,7 @@ public class ItemRefillHelper {
     private static void doRefill(Minecraft client, HandType handType) {
         if (client.player == null || client.level == null) return;
 
-        if (client.screen != null && !(client.screen instanceof InventoryScreen)) {
+        if (client.gui.screen() != null && !(client.gui.screen() instanceof InventoryScreen)) {
             return;
         }
 
