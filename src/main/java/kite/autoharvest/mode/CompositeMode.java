@@ -11,7 +11,7 @@ public class CompositeMode implements AutoMode {
     }
 
     public static CompositeMode farmer() {
-        return new CompositeMode(new PlantMode(), new HarvestMode());
+        return new CompositeMode(new HarvestMode(), new PlantMode());
     }
 
     @Override
