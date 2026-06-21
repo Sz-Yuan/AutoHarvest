@@ -40,8 +40,20 @@ public class HarvestMode implements AutoMode {
             Blocks.SWEET_BERRY_BUSH
     );
 
+    private boolean pendingHarvest = false;
+    private BlockPos pendingPos = null;
+    private boolean useInteract = false;
+
     @Override
     public void tick() {
+        // 如果有待执行的收割任务，先执行
+        if (pendingHarvest && pendingPos != null) {
+            ensureFortuneTool();
+            executeHarvest(pendingPos, useInteract);
+            resetPending();
+            return;
+        }
+
         ClientLevel world = BoxUtil.getWorld();
         LocalPlayer player = BoxUtil.getPlayer();
         if (world == null || player == null) return;
@@ -63,31 +75,65 @@ public class HarvestMode implements AutoMode {
             if (!HARVEST_CROPS.contains(block)) continue;
 
             if (block == Blocks.SUGAR_CANE) {
-                if (world.getBlockState(pos.below()).is(Blocks.SUGAR_CANE)) {
-                    continue;
+                if (world.getBlockState(pos.below()).is(Blocks.SUGAR_CANE)) continue;
+                if (world.getBlockState(pos.above()).is(Blocks.SUGAR_CANE)) {
+                    tryHarvest(pos.above(), false);
+                    return;
                 }
-                BlockPos secondpos = pos.above();
-                if (world.getBlockState(secondpos).is(Blocks.SUGAR_CANE)) {
-                    if (tryHarvest(player, pos.above())) {
-                        return;
-                    }
-                }
-            } else if (state.getBlock() == Blocks.SWEET_BERRY_BUSH && !isNotFullyGrown(state, block)) {
-                if (AutoHarvestConfig.autoSwitchFortuneTool()) {
-                    int fortuneSlot = findFortuneToolSlot(player);
-                    if (fortuneSlot != -1) {
-                        player.getInventory().setSelectedSlot(fortuneSlot);
-                    }
-                }
-                InteractionHelper.interactBlock(player, pos, InteractionHand.MAIN_HAND, Direction.UP);
+            } else if (block == Blocks.SWEET_BERRY_BUSH) {
+                if (isNotFullyGrown(state, block)) continue;
+                tryHarvest(pos, true);
                 return;
             } else {
                 if (isNotFullyGrown(state, block)) continue;
-                if (tryHarvest(player, pos)) {
-                    return;
-                }
+                tryHarvest(pos, false);
+                return;
             }
         }
+    }
+
+    // 切换时运工具后延迟一个tick再收割，确保游戏更新主手物品效果
+    private void tryHarvest(BlockPos pos, boolean interact) {
+        if (needsFortuneSwitch()) {
+            ensureFortuneTool();
+            pendingHarvest = true;
+            pendingPos = pos;
+            useInteract = interact;
+            return;
+        }
+        executeHarvest(pos, interact);
+    }
+
+    private void executeHarvest(BlockPos pos, boolean interact) {
+        if (interact) {
+            InteractionHelper.interactBlock(BoxUtil.getPlayer(), pos, InteractionHand.MAIN_HAND, Direction.UP);
+        } else {
+            InteractionHelper.breakBlock(pos, Direction.UP);
+        }
+    }
+
+    private boolean needsFortuneSwitch() {
+        if (!AutoHarvestConfig.autoSwitchFortuneTool()) return false;
+        LocalPlayer player = BoxUtil.getPlayer();
+        if (player == null) return false;
+        int fortuneSlot = findFortuneToolSlot(player);
+        return fortuneSlot != -1 && player.getInventory().getSelectedSlot() != fortuneSlot;
+    }
+
+    private void ensureFortuneTool() {
+        if (!AutoHarvestConfig.autoSwitchFortuneTool()) return;
+        LocalPlayer player = BoxUtil.getPlayer();
+        if (player == null) return;
+        int fortuneSlot = findFortuneToolSlot(player);
+        if (fortuneSlot != -1) {
+            player.getInventory().setSelectedSlot(fortuneSlot);
+        }
+    }
+
+    private void resetPending() {
+        pendingHarvest = false;
+        pendingPos = null;
+        useInteract = false;
     }
 
     private boolean isNotFullyGrown(BlockState state, Block block) {
@@ -103,18 +149,6 @@ public class HarvestMode implements AutoMode {
             }
         }
         return false;
-    }
-
-
-    private boolean tryHarvest(LocalPlayer player, BlockPos pos) {
-        if (AutoHarvestConfig.autoSwitchFortuneTool()) {
-            int fortuneSlot = findFortuneToolSlot(player);
-            if (fortuneSlot != -1) {
-                player.getInventory().setSelectedSlot(fortuneSlot);
-            }
-        }
-        InteractionHelper.breakBlock(pos, Direction.UP);
-        return true;
     }
 
     private int findFortuneToolSlot(LocalPlayer player) {
@@ -158,6 +192,6 @@ public class HarvestMode implements AutoMode {
 
     @Override
     public void onDisable() {
-        // 留空
+        resetPending();
     }
 }
