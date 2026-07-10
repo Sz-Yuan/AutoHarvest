@@ -63,6 +63,7 @@ public class FarmerMode implements AutoMode {
     private Item targetSeed = null;
     private boolean targetInteract = false;
     private final Map<BlockPos, Item> pendingPlant = new HashMap<>();
+    private final Map<BlockPos, Item> verifyPlant = new HashMap<>();
 
     @Override
     public void tick() {
@@ -82,6 +83,13 @@ public class FarmerMode implements AutoMode {
             }
         }
 
+        verifyPlant.entrySet().removeIf(e -> {
+            if (player.level().getBlockState(e.getKey()).isAir()) {
+                pendingPlant.put(e.getKey(), e.getValue());
+            }
+            return true;
+        });
+
         if (pendingBreak && targetPos != null) {
             executeHarvest();
             pendingBreak = false;
@@ -98,18 +106,27 @@ public class FarmerMode implements AutoMode {
     private void processPendingPlant(LocalPlayer player) {
         if (pendingPlant.isEmpty()) return;
 
+        double range = AutoHarvestConfig.getInstance().getRadius();
+        double rangeSq = range * range;
+
         Iterator<Map.Entry<BlockPos, Item>> it = pendingPlant.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<BlockPos, Item> entry = it.next();
             BlockPos pos = entry.getKey();
-            Item seed = entry.getValue();
 
             if (!player.level().getBlockState(pos).isAir()) {
                 it.remove();
                 continue;
             }
 
-            if (doPlant(player, pos, seed)) it.remove();
+            if (player.distanceToSqr(Vec3.atCenterOf(pos)) > rangeSq) continue;
+
+            Item seed = entry.getValue();
+            if (doPlant(player, pos, seed)) {
+                verifyPlant.put(pos, seed);
+                it.remove();
+                return;
+            }
         }
     }
 
@@ -137,25 +154,19 @@ public class FarmerMode implements AutoMode {
                 targetPos = pos.above();
                 targetSeed = null;
                 targetInteract = false;
-                checkFortuneAndHarvest(player);
-                return;
-            }
-
-            if (block == Blocks.SWEET_BERRY_BUSH) {
+            } else if (block == Blocks.SWEET_BERRY_BUSH) {
                 if (isNotFullyGrown(state, block)) continue;
 
                 targetPos = pos;
                 targetSeed = null;
                 targetInteract = true;
-                checkFortuneAndHarvest(player);
-                return;
+            } else {
+                if (isNotFullyGrown(state, block)) continue;
+
+                targetPos = pos;
+                targetSeed = CROP_TO_SEED.get(block);
+                targetInteract = false;
             }
-
-            if (isNotFullyGrown(state, block)) continue;
-
-            targetPos = pos;
-            targetSeed = CROP_TO_SEED.get(block);
-            targetInteract = false;
             checkFortuneAndHarvest(player);
             return;
         }
@@ -213,6 +224,10 @@ public class FarmerMode implements AutoMode {
 
         boolean offhand = AutoHarvestConfig.farmerOffhandPlant();
         ensureSeedAvailable(player, slot, offhand);
+
+        ItemStack handStack = offhand ? player.getOffhandItem() : player.getMainHandItem();
+        if (handStack.getItem() != seed) return false;
+
         InteractionHelper.interactBlock(player, pos.below(), offhand ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND, Direction.UP);
         return true;
     }
@@ -362,5 +377,6 @@ public class FarmerMode implements AutoMode {
         targetPos = null;
         targetSeed = null;
         pendingPlant.clear();
+        verifyPlant.clear();
     }
 }
