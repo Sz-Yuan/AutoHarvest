@@ -1,6 +1,7 @@
 package kite.autoharvest.config;
 
 import kite.autoharvest.mode.*;
+import kite.autoharvest.mode.compound.FarmerMode;
 
 public enum ModeEnum {
     weed {
@@ -37,7 +38,7 @@ public enum ModeEnum {
     farmer {
         @Override
         public AutoMode setMode() {
-            return CompositeMode.farmer();
+            return new FarmerMode();
         }
     },
 

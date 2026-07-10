@@ -53,6 +53,9 @@ public class AutoHarvestConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip
     public boolean skipwater = false;
 
+    @ConfigEntry.Gui.Tooltip
+    public boolean farmerOffhandPlant = true;
+
     public double getRadius() {
         return radiusCenti / 10.0;
     }
@@ -112,6 +115,10 @@ public class AutoHarvestConfig implements ConfigData {
 
     public static boolean skipWater() {
         return !getInstance().skipwater;
+    }
+
+    public static boolean farmerOffhandPlant() {
+        return getInstance().farmerOffhandPlant;
     }
 
 }

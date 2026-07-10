@@ -13,12 +13,12 @@
   "key.category.kite.autoharvest": "AutoHarvest",
   "key.autoharvest.toggle": "Toggle AutoHarvest",
   "key.autoharvest.cycle": "Cycle Through Modes",
-  "text.autoconfig.autoharvest.option.autoSwitchFortuneTool": "Auto-switch Fortune Tool on Harvest",
-  "text.autoconfig.autoharvest.option.autoSwitchFortuneTool.@Tooltip": "Automatically switches to a Fortune-enchanted tool in your hotbar when in Harvest mode.",
+  "text.autoconfig.autoharvest.option.autoSwitchFortuneTool": "Auto-switch Fortune Tool",
+  "text.autoconfig.autoharvest.option.autoSwitchFortuneTool.@Tooltip": "Automatically switches to a Fortune-enchanted tool in your hotbar when in Harvest mode or Farmer mode.",
   "text.autoconfig.autoharvest.option.coolDown": "Entity Interaction Cooldown",
   "text.autoconfig.autoharvest.option.coolDown.@Tooltip": "Cooldown between interactions with feedable entities in Feed mode, in §aseconds§r.",
   "text.autoconfig.autoharvest.option.enableRefill": "Enable Refill",
-  "text.autoconfig.autoharvest.option.enableRefill.@Tooltip": "When enabled, automatically refills the item required for the current mode into your hand (requires holding the item).",
+  "text.autoconfig.autoharvest.option.enableRefill.@Tooltip": "When enabled, automatically refills the item required for the current mode into your hand, also applies to Farmer mode (requires holding the item).",
   "text.autoconfig.autoharvest.option.fishingRodDurabilityThreshold": "Durability Threshold",
   "text.autoconfig.autoharvest.option.fishingRodDurabilityThreshold.@Tooltip": "Stops fishing when the fishing rod's remaining uses drop below this value.",
   "text.autoconfig.autoharvest.option.fishingRodProtection": "Fishing Rod Protection",
@@ -47,5 +47,9 @@
   "text.autoconfig.autoharvest.option.autoenable": "Auto Enable",
   "text.autoconfig.autoharvest.option.autoenable.@Tooltip": "Automatically enable the mode after switching",
   "text.autoconfig.autoharvest.option.skipwater": "Skip Water Check",
-  "text.autoconfig.autoharvest.option.skipwater.@Tooltip": "Hoeing mode will not check for nearby water sources"
+  "text.autoconfig.autoharvest.option.skipwater.@Tooltip": "Hoeing mode will not check for nearby water sources",
+  "text.autoconfig.autoharvest.option.farmerOffhandPlant": "Farmer Offhand Planting",
+  "text.autoconfig.autoharvest.option.farmerOffhandPlant.@Tooltip": "When enabled, Farmer mode places seeds into the offhand instead of the main hand.",
+  "autoharvest.mode.farmer.nocrop": "§a[AutoHarvest] §fNo harvestable crops",
+  "autoharvest.mode.farmer.noseed": "§a[AutoHarvest] §fNo matching seed found"
 }
