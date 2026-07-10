@@ -49,7 +49,5 @@
   "text.autoconfig.autoharvest.option.skipwater": "Skip Water Check",
   "text.autoconfig.autoharvest.option.skipwater.@Tooltip": "Hoeing mode will not check for nearby water sources",
   "text.autoconfig.autoharvest.option.farmerOffhandPlant": "Farmer Offhand Planting",
-  "text.autoconfig.autoharvest.option.farmerOffhandPlant.@Tooltip": "When enabled, Farmer mode places seeds into the offhand instead of the main hand.",
-  "autoharvest.mode.farmer.nocrop": "§a[AutoHarvest] §fNo harvestable crops",
-  "autoharvest.mode.farmer.noseed": "§a[AutoHarvest] §fNo matching seed found"
+  "text.autoconfig.autoharvest.option.farmerOffhandPlant.@Tooltip": "When enabled, Farmer mode places seeds into the offhand instead of the main hand."
 }

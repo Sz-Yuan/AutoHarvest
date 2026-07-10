@@ -49,7 +49,5 @@
   "text.autoconfig.autoharvest.option.skipwater": "不检查水源",
   "text.autoconfig.autoharvest.option.skipwater.@Tooltip": "锄地模式不检查周围是否存在水源",
   "text.autoconfig.autoharvest.option.farmerOffhandPlant": "农夫模式副手种植",
-  "text.autoconfig.autoharvest.option.farmerOffhandPlant.@Tooltip": "开启后农夫模式会将种子放入副手而非主手进行种植。",
-  "autoharvest.mode.farmer.nocrop": "§a[AutoHarvest] §f当前无可收割作物",
-  "autoharvest.mode.farmer.noseed": "§a[AutoHarvest] §f未匹配到相应种子"
+  "text.autoconfig.autoharvest.option.farmerOffhandPlant.@Tooltip": "开启后农夫模式会将种子放入副手而非主手进行种植。"
 }
