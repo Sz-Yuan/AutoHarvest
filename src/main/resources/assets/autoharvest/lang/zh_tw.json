@@ -13,12 +13,12 @@
   "autoharvest.message.mode.enabled": "§a[AutoHarvest] §f已啟用模式：§e%s",
   "key.category.kite.autoharvest": "AutoHarvest",
   "key.autoharvest.toggle": "開關 AutoHarvest",
-  "text.autoconfig.autoharvest.option.autoSwitchFortuneTool": "收割自動切換時運工具",
-  "text.autoconfig.autoharvest.option.autoSwitchFortuneTool.@Tooltip": "收割模式下自動切換快捷欄中的時運工具",
+  "text.autoconfig.autoharvest.option.autoSwitchFortuneTool": "自動切換時運工具",
+  "text.autoconfig.autoharvest.option.autoSwitchFortuneTool.@Tooltip": "在收割模式或農夫模式下自動切換快捷欄中的時運工具",
   "text.autoconfig.autoharvest.option.coolDown": "實體互動冷卻",
   "text.autoconfig.autoharvest.option.coolDown.@Tooltip": "餵食模式下與可被餵食生物的互動冷卻，單位為§a秒",
   "text.autoconfig.autoharvest.option.enableRefill": "補充物品",
-  "text.autoconfig.autoharvest.option.enableRefill.@Tooltip": "開啟後將自動補充目前選擇模式所需的物品至手中，需先手持該物品",
+  "text.autoconfig.autoharvest.option.enableRefill.@Tooltip": "開啟後將自動補充目前選擇模式所需的物品至手中，農夫模式同樣適用，需先手持該物品",
   "text.autoconfig.autoharvest.option.fishingRodDurabilityThreshold": "耐久閾值",
   "text.autoconfig.autoharvest.option.fishingRodDurabilityThreshold.@Tooltip": "魚竿剩餘使用次數低於此數值時停止釣魚。",
   "text.autoconfig.autoharvest.option.fishingRodProtection": "魚竿保護",
@@ -47,5 +47,7 @@
   "text.autoconfig.autoharvest.option.autoenable": "自動啟用",
   "text.autoconfig.autoharvest.option.autoenable.@Tooltip": "切換模式後自動啟動該模式",
   "text.autoconfig.autoharvest.option.skipwater": "不檢查水源",
-  "text.autoconfig.autoharvest.option.skipwater.@Tooltip": "鋤地模式不檢查周圍是否存在水源"
+  "text.autoconfig.autoharvest.option.skipwater.@Tooltip": "鋤地模式不檢查周圍是否存在水源",
+  "text.autoconfig.autoharvest.option.farmerOffhandPlant": "農夫模式副手種植",
+  "text.autoconfig.autoharvest.option.farmerOffhandPlant.@Tooltip": "開啟後農夫模式會將種子放入副手而非主手進行種植。"
 }
