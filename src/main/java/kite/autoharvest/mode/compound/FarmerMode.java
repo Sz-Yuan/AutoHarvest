@@ -33,7 +33,6 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -63,7 +62,6 @@ public class FarmerMode implements AutoMode {
     private Item targetSeed = null;
     private boolean targetInteract = false;
     private final Map<BlockPos, Item> pendingPlant = new HashMap<>();
-    private final Map<BlockPos, Item> verifyPlant = new HashMap<>();
 
     @Override
     public void tick() {
@@ -83,17 +81,12 @@ public class FarmerMode implements AutoMode {
             }
         }
 
-        verifyPlant.entrySet().removeIf(e -> {
-            if (player.level().getBlockState(e.getKey()).isAir()) {
-                pendingPlant.put(e.getKey(), e.getValue());
-            }
-            return true;
-        });
-
         if (pendingBreak && targetPos != null) {
             executeHarvest();
             pendingBreak = false;
-            tryPlantNowOrEnqueue(player);
+            if (targetSeed != null) {
+                pendingPlant.put(targetPos, targetSeed);
+            }
             targetPos = null;
             targetSeed = null;
             return;
@@ -109,24 +102,14 @@ public class FarmerMode implements AutoMode {
         double range = AutoHarvestConfig.getInstance().getRadius();
         double rangeSq = range * range;
 
-        Iterator<Map.Entry<BlockPos, Item>> it = pendingPlant.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<BlockPos, Item> entry = it.next();
+        for (Map.Entry<BlockPos, Item> entry : pendingPlant.entrySet()) {
             BlockPos pos = entry.getKey();
 
-            if (!player.level().getBlockState(pos).isAir()) {
-                it.remove();
-                continue;
-            }
-
+            if (!player.level().getBlockState(pos).isAir()) continue;
             if (player.distanceToSqr(Vec3.atCenterOf(pos)) > rangeSq) continue;
 
             Item seed = entry.getValue();
-            if (doPlant(player, pos, seed)) {
-                verifyPlant.put(pos, seed);
-                it.remove();
-                return;
-            }
+            if (doPlant(player, pos, seed)) return;
         }
     }
 
@@ -144,8 +127,6 @@ public class FarmerMode implements AutoMode {
             Block block = state.getBlock();
 
             if (!HARVEST_CROPS.contains(block)) continue;
-
-            if (pendingPlant.containsKey(pos)) continue;
 
             if (block == Blocks.SUGAR_CANE) {
                 if (world.getBlockState(pos.below()).is(Blocks.SUGAR_CANE)) continue;
@@ -179,17 +160,11 @@ public class FarmerMode implements AutoMode {
             return;
         }
         executeHarvest();
-        tryPlantNowOrEnqueue(player);
-        targetPos = null;
-        targetSeed = null;
-    }
-
-    private void tryPlantNowOrEnqueue(LocalPlayer player) {
-        if (targetSeed == null) return;
-
-        if (!player.level().getBlockState(targetPos).isAir() || !doPlant(player, targetPos, targetSeed)) {
+        if (targetSeed != null) {
             pendingPlant.put(targetPos, targetSeed);
         }
+        targetPos = null;
+        targetSeed = null;
     }
 
     private void executeHarvest() {
@@ -224,10 +199,6 @@ public class FarmerMode implements AutoMode {
 
         boolean offhand = AutoHarvestConfig.farmerOffhandPlant();
         ensureSeedAvailable(player, slot, offhand);
-
-        ItemStack handStack = offhand ? player.getOffhandItem() : player.getMainHandItem();
-        if (handStack.getItem() != seed) return false;
-
         InteractionHelper.interactBlock(player, pos.below(), offhand ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND, Direction.UP);
         return true;
     }
@@ -377,6 +348,5 @@ public class FarmerMode implements AutoMode {
         targetPos = null;
         targetSeed = null;
         pendingPlant.clear();
-        verifyPlant.clear();
     }
 }
