@@ -17,7 +17,7 @@ Multi-loader architecture using Gradle build-logic convention plugins (`multiloa
 
 No tests, no linter, no CI, no typecheck step. Build success = correctness.
 
-**Do not run `./gradlew build` or any build command unless explicitly asked.**
+**NEVER run any Gradle build/compile task. All builds are performed by the user manually.**
 
 ## Source Layout
 
