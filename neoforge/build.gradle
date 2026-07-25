@@ -16,7 +16,7 @@ neoForge {
     }
     mods {
         "${mod_id}" {
-            sourceSet sourceSets.main
+            sourceSet project.sourceSets.main
         }
     }
 }
