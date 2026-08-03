@@ -38,6 +38,7 @@
   "text.autoconfig.autoharvest.option.ticksPerAction.@Tooltip": "Number of game ticks between actions. Lower values mean faster execution (1 tick = 1 action per tick).",
   "autoharvest.mode.error": "§a[AutoHarvest] §cERROR",
   "autoharvest.mode.fishing.error": "§a[AutoHarvest] §cThe fishing bobber is stuck — please check its position!",
+  "autoharvest.mode.bamboo.needSword": "§a[AutoHarvest] §cBreaking bamboo requires item: Sword",
   "text.autoconfig.autoharvest.option.fishingReCastDelay": "Auto Fishing Delay",
   "text.autoconfig.autoharvest.option.fishingReCastDelay.@Tooltip": "The interval between retracting the fishing rod and automatically casting it again, in ticks.",
   "text.autoconfig.autoharvest.option.autoSwitchRod": "Auto-switch fishing rod",

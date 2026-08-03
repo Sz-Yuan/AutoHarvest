@@ -38,6 +38,7 @@
   "text.autoconfig.autoharvest.title": "AutoHarvest 配置",
   "autoharvest.mode.error": "§a[AutoHarvest] §c错误",
   "autoharvest.mode.fishing.error": "§a[AutoHarvest] §c浮标卡住，请检查位置！",
+  "autoharvest.mode.bamboo.needSword": "§a[AutoHarvest] §c破坏竹子需要物品：剑",
   "text.autoconfig.autoharvest.option.fishingReCastDelay": "自动钓鱼延迟",
   "text.autoconfig.autoharvest.option.fishingReCastDelay.@Tooltip": "收回鱼竿与自动抛出鱼竿之间的间隔,单位为 tick",
   "text.autoconfig.autoharvest.option.autoSwitchRod": "自动切换鱼竿",

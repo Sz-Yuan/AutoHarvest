@@ -3,6 +3,7 @@ package kite.autoharvest.mode;
 import kite.autoharvest.config.AutoHarvestConfig;
 import kite.autoharvest.util.BoxUtil;
 import kite.autoharvest.util.InteractionHelper;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
@@ -13,6 +14,8 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -37,7 +40,8 @@ public class HarvestMode implements AutoMode {
             Blocks.BEETROOTS,
             Blocks.NETHER_WART,
             Blocks.SUGAR_CANE,
-            Blocks.SWEET_BERRY_BUSH
+            Blocks.SWEET_BERRY_BUSH,
+            Blocks.BAMBOO
     );
 
     private boolean pendingHarvest = false;
@@ -78,6 +82,17 @@ public class HarvestMode implements AutoMode {
                 if (world.getBlockState(pos.below()).is(Blocks.SUGAR_CANE)) continue;
                 if (world.getBlockState(pos.above()).is(Blocks.SUGAR_CANE)) {
                     tryHarvest(pos.above(), false);
+                    return;
+                }
+            } else if (block == Blocks.BAMBOO) {
+                if (world.getBlockState(pos.below()).is(Blocks.BAMBOO)) continue;
+                if (world.getBlockState(pos.above()).is(Blocks.BAMBOO)) {
+                    if (!hasSword(player)) {
+                        player.sendOverlayMessage(Component.translatable("autoharvest.mode.bamboo.needSword"));
+                        return;
+                    }
+                    ensureSword(player);
+                    InteractionHelper.breakBlock(pos.above(), Direction.UP);
                     return;
                 }
             } else if (block == Blocks.SWEET_BERRY_BUSH) {
@@ -183,6 +198,69 @@ public class HarvestMode implements AutoMode {
                 stack.is(ItemTags.SHOVELS) ||
                 stack.is(ItemTags.HOES) ||
                 stack.is(ItemTags.PICKAXES);
+    }
+
+    private boolean hasSword(LocalPlayer player) {
+        for (int i = 0; i < 36; i++) {
+            ItemStack stack = player.getInventory().getItem(i);
+            if (!stack.isEmpty() && stack.is(ItemTags.SWORDS)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void ensureSword(LocalPlayer player) {
+        if (player.getMainHandItem().is(ItemTags.SWORDS)) return;
+
+        for (int i = 0; i < 9; i++) {
+            ItemStack stack = player.getInventory().getItem(i);
+            if (!stack.isEmpty() && stack.is(ItemTags.SWORDS)) {
+                player.getInventory().setSelectedSlot(i);
+                return;
+            }
+        }
+
+        for (int i = 9; i < 36; i++) {
+            ItemStack stack = player.getInventory().getItem(i);
+            if (!stack.isEmpty() && stack.is(ItemTags.SWORDS)) {
+                moveToHotbar(player, i);
+                return;
+            }
+        }
+    }
+
+    private void moveToHotbar(LocalPlayer player, int sourceSlot) {
+        int hotbarSlot = -1;
+        for (int i = 0; i < 9; i++) {
+            if (player.getInventory().getItem(i).isEmpty()) {
+                hotbarSlot = i;
+                break;
+            }
+        }
+        if (hotbarSlot == -1) hotbarSlot = player.getInventory().getSelectedSlot();
+
+        var handler = player.containerMenu;
+        clickSlot(handler, sourceSlot);
+        clickSlot(handler, hotbarSlot + 36);
+        if (!handler.getCarried().isEmpty()) {
+            clickSlot(handler, sourceSlot);
+        }
+        player.getInventory().setSelectedSlot(hotbarSlot);
+    }
+
+    private void clickSlot(AbstractContainerMenu handler, int slotIndex) {
+        Minecraft client = Minecraft.getInstance();
+        if (client.player == null) return;
+        if (client.gameMode != null) {
+            client.gameMode.handleContainerInput(
+                    handler.containerId,
+                    slotIndex,
+                    0,
+                    ContainerInput.PICKUP,
+                    client.player
+            );
+        }
     }
 
     @Override
