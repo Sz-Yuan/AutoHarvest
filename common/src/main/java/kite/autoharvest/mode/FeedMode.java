@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.allay.Allay;
 import net.minecraft.world.entity.animal.sheep.Sheep;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -16,10 +17,31 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
+import java.lang.reflect.Method;
 import java.util.*;
 
 public class FeedMode implements AutoMode {
 
+    private static final Method CAN_DUPLICATE_METHOD = initCanDuplicateMethod();
+
+    private static Method initCanDuplicateMethod() {
+        try {
+            Method method = Allay.class.getDeclaredMethod("canDuplicate");
+            method.setAccessible(true);
+            return method;
+        } catch (NoSuchMethodException e) {
+            return null;
+        }
+    }
+
+    private static boolean canAllayDuplicate(Allay allay) {
+        if (CAN_DUPLICATE_METHOD == null) return false;
+        try {
+            return (boolean) CAN_DUPLICATE_METHOD.invoke(allay);
+        } catch (ReflectiveOperationException e) {
+            return false;
+        }
+    }
 
     private static final Map<UUID, Long> INTERACT_COOLDOWN = new HashMap<>();
 
@@ -53,7 +75,7 @@ public class FeedMode implements AutoMode {
         if (entity instanceof Animal animal) {
             return !animal.isBaby();
         }
-        return false;
+        return entity instanceof Allay allay && allay.isDancing() && canAllayDuplicate(allay);
     }
 
     @Override

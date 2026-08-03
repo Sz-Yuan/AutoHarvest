@@ -4,6 +4,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.*;
+import net.minecraft.world.entity.animal.allay.Allay;
 import net.minecraft.world.entity.animal.armadillo.Armadillo;
 import net.minecraft.world.entity.animal.axolotl.Axolotl;
 import net.minecraft.world.entity.animal.bee.Bee;
@@ -92,5 +93,6 @@ public class Animals {
         BREEDABLE_WHITELIST.put(Turtle.class, Set.of(Items.SEAGRASS));
         BREEDABLE_WHITELIST.put(Armadillo.class, Set.of(Items.SPIDER_EYE));
         BREEDABLE_WHITELIST.put(Axolotl.class, Set.of(Items.TROPICAL_FISH_BUCKET));
+        BREEDABLE_WHITELIST.put(Allay.class,Set.of(Items.AMETHYST_SHARD));
     }
 }
