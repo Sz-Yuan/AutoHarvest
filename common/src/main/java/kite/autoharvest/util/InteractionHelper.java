@@ -35,6 +35,7 @@ public final class InteractionHelper {
         Vec3 hitLocation = target.getBoundingBox().getCenter();
         EntityHitResult entityHitResult = new EntityHitResult(target, hitLocation);
         if (client.gameMode == null) return;
+        player.swing(hand);
         client.gameMode.interact(player, target, entityHitResult, hand);
     }
 
