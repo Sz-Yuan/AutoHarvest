@@ -24,3 +24,10 @@ type="required"
 versionRange="[${minecraft_version}]"
 ordering="NONE"
 side="CLIENT"
+
+[[dependencies.${mod_id}]]
+modId="cloth_config"
+type="required"
+versionRange="[${cloth_config_version},)"
+ordering="NONE"
+side="CLIENT"
