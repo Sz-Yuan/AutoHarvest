@@ -107,10 +107,19 @@ public class FarmerMode implements AutoMode {
 
             if (!player.level().getBlockState(pos).isAir()) continue;
             if (player.distanceToSqr(Vec3.atCenterOf(pos)) > rangeSq) continue;
+            if (!isPlantableBelow(player, pos, entry.getValue())) continue;
 
             Item seed = entry.getValue();
             if (doPlant(player, pos, seed)) return;
         }
+    }
+
+    private boolean isPlantableBelow(LocalPlayer player, BlockPos pos, Item seed) {
+        Block below = player.level().getBlockState(pos.below()).getBlock();
+        if (seed == Items.NETHER_WART) {
+            return below == Blocks.SOUL_SAND;
+        }
+        return below == Blocks.FARMLAND;
     }
 
     private void scanAndHarvest(ClientLevel world, LocalPlayer player) {
