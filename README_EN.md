@@ -3,6 +3,8 @@
 
 An automatic farming mod for Minecraft.
 
+> ⚠️ **Note**: Due to limited time, new features and content are only added to the **latest version**. Older versions receive bug fixes only and will not get new features.
+
 ## Usage
 
 - Press **`H`** to toggle the mod on or off.
