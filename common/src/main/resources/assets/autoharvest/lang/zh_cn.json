@@ -44,7 +44,7 @@
   "text.autoconfig.autoharvest.option.autoSwitchRod": "自动切换鱼竿",
   "text.autoconfig.autoharvest.option.autoSwitchRod.@Tooltip": "在钓鱼模式下自动切换至快捷栏的鱼竿",
   "text.autoconfig.autoharvest.option.isFlower": "跳过花",
-  "text.autoconfig.autoharvest.option.isFlower.@Tooltip": "除草模式将跳过花、花簇和枯叶",
+  "text.autoconfig.autoharvest.option.isFlower.@Tooltip": "除草模式将跳过花、花簇、枯叶和绯红菌/诡异菌",
   "text.autoconfig.autoharvest.option.autoenable": "自动启动",
   "text.autoconfig.autoharvest.option.autoenable.@Tooltip": "切换模式后自动启动该模式",
   "text.autoconfig.autoharvest.option.skipwater": "不检查水源",

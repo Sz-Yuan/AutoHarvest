@@ -44,7 +44,7 @@
   "text.autoconfig.autoharvest.option.autoSwitchRod": "Auto-switch fishing rod",
   "text.autoconfig.autoharvest.option.autoSwitchRod.@Tooltip": "Automatically switch to the fishing rod in the hotbar when in fishing mode.",
   "text.autoconfig.autoharvest.option.isFlower": "skip flowers",
-  "text.autoconfig.autoharvest.option.isFlower.@Tooltip": "Should weed mode skip flowers、leaf_litter and flower cluster?",
+  "text.autoconfig.autoharvest.option.isFlower.@Tooltip": "Should weed mode skip flowers, leaf litter, flower clusters, crimson fungus and warped fungus?",
   "text.autoconfig.autoharvest.option.autoenable": "Auto Enable",
   "text.autoconfig.autoharvest.option.autoenable.@Tooltip": "Automatically enable the mode after switching",
   "text.autoconfig.autoharvest.option.skipwater": "Skip Water Check",

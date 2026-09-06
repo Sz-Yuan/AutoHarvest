@@ -40,12 +40,24 @@ public class WeedMode implements AutoMode {
             Blocks.TALL_DRY_GRASS,
             Blocks.PITCHER_PLANT,
             Blocks.TORCHFLOWER,
+            Blocks.OPEN_EYEBLOSSOM,
+            Blocks.CLOSED_EYEBLOSSOM,
             Blocks.LARGE_FERN,
             Blocks.WILDFLOWERS,
             Blocks.PINK_PETALS,
             Blocks.LEAF_LITTER,
             Blocks.SEAGRASS,
-            Blocks.TALL_SEAGRASS
+            Blocks.TALL_SEAGRASS,
+            // Nether vegetation
+            Blocks.NETHER_SPROUTS,
+            Blocks.CRIMSON_ROOTS,
+            Blocks.WARPED_ROOTS,
+            Blocks.CRIMSON_FUNGUS,
+            Blocks.WARPED_FUNGUS,
+            Blocks.WEEPING_VINES,
+            Blocks.WEEPING_VINES_PLANT,
+            Blocks.TWISTING_VINES,
+            Blocks.TWISTING_VINES_PLANT
     );
 
     @Override
@@ -62,7 +74,8 @@ public class WeedMode implements AutoMode {
             Minecraft client = Minecraft.getInstance();
             Block block = world.getBlockState(blockPos).getBlock();
 
-            if ((block instanceof FlowerBlock || block instanceof TallFlowerBlock) && AutoHarvestConfig.isFlower()) {
+            if ((block instanceof FlowerBlock || block instanceof TallFlowerBlock || block instanceof NetherFungusBlock)
+                    && AutoHarvestConfig.isFlower()) {
                 return false;
             }
             if ((block instanceof FlowerBedBlock || block == Blocks.LEAF_LITTER) && AutoHarvestConfig.isFlower()) {
