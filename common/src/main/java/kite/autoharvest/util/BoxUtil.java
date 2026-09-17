@@ -39,7 +39,7 @@ public class BoxUtil {
     public static void forEachBlockInRange(Vec3 playerPos, double radius, Predicate<BlockPos> action) {
         AABB searchBox = createSearchBox(playerPos, radius);
         int radiusInt = (int) Math.ceil(radius);
-        for (BlockPos pos : BlockPos.withinManhattan(BlockPos.containing(playerPos), radiusInt, radiusInt, radiusInt)) {
+        for (BlockPos pos : BlockPos.withinManhattan(BlockPos.containing(playerPos), radiusInt)) {
             if (!searchBox.contains(Vec3.atCenterOf(pos))) continue;
             if (isOutsideSphere(pos, playerPos, radius)) continue;
             if (action.test(pos)) return;

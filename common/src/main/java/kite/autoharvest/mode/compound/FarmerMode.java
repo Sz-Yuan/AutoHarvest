@@ -129,7 +129,7 @@ public class FarmerMode implements AutoMode {
         double radius = AutoHarvestConfig.getInstance().getRadius();
         int radiusInt = (int) Math.ceil(radius);
 
-        for (BlockPos pos : BlockPos.withinManhattan(BlockPos.containing(playerPos), radiusInt, radiusInt, radiusInt)) {
+        for (BlockPos pos : BlockPos.withinManhattan(BlockPos.containing(playerPos), radiusInt)) {
             if (BoxUtil.isOutsideSphere(pos, playerPos, radius)) continue;
 
             BlockState state = world.getBlockState(pos);

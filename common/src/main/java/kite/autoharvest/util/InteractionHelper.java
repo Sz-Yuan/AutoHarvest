@@ -7,6 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.component.SwingAnimation;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -35,7 +36,7 @@ public final class InteractionHelper {
         Vec3 hitLocation = target.getBoundingBox().getCenter();
         EntityHitResult entityHitResult = new EntityHitResult(target, hitLocation);
         if (client.gameMode == null) return;
-        player.swing(hand);
+        player.swing(hand, SwingAnimation.DEFAULT, true);
         client.gameMode.interact(player, target, entityHitResult, hand);
     }
 

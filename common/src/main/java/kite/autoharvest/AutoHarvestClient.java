@@ -9,7 +9,6 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,12 +23,12 @@ public class AutoHarvestClient {
 
     public static final KeyMapping TOGGLE_KEY = new KeyMapping(
             "key.autoharvest.toggle",
-            InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_H,
+            InputConstants.Type.KEYBOARD,
+            11,
             AUTOHARVEST_CATEGORY);
     public static final KeyMapping CYCLE_MODE_KEY = new KeyMapping(
             "key.autoharvest.cycle",
-            InputConstants.Type.KEYSYM,
+            InputConstants.Type.KEYBOARD,
             InputConstants.UNKNOWN.getValue(),
             AUTOHARVEST_CATEGORY);
 
@@ -50,7 +49,7 @@ public class AutoHarvestClient {
     private static KeyMapping createModeKey(String name) {
         return new KeyMapping(
                 "autoharvest.mode." + name,
-                InputConstants.Type.KEYSYM,
+                InputConstants.Type.KEYBOARD,
                 InputConstants.UNKNOWN.getValue(),
                 AUTOHARVEST_CATEGORY_MODE);
     }

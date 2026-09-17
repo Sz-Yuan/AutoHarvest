@@ -38,6 +38,7 @@ public class WeedMode implements AutoMode {
             Blocks.BUSH,
             Blocks.SHORT_DRY_GRASS,
             Blocks.TALL_DRY_GRASS,
+            Blocks.RED_SHRUB,
             Blocks.PITCHER_PLANT,
             Blocks.TORCHFLOWER,
             Blocks.OPEN_EYEBLOSSOM,
