@@ -38,10 +38,11 @@ public final class WaterProximityChecker {
     }
 
     public static boolean hasNoWaterNearby(Level world, BlockPos pos) {
-        for (int dx = -4; dx <= 4; dx++) {
-            for (int dz = -4; dz <= 4; dz++) {
-                {
-                    BlockPos checkPos = pos.offset(dx, 0, dz);
+        // Match FarmBlock#isNearWater: water up to 4 blocks horizontally and 1 block above hydrates the farmland.
+        for (int dy = 0; dy <= 1; dy++) {
+            for (int dx = -4; dx <= 4; dx++) {
+                for (int dz = -4; dz <= 4; dz++) {
+                    BlockPos checkPos = pos.offset(dx, dy, dz);
                     var state = world.getBlockState(checkPos);
                     var fluidState = world.getFluidState(checkPos);
                     if (fluidState.is(FluidTags.WATER) && fluidState.isSource()) {
