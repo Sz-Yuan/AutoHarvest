@@ -26,7 +26,7 @@ public final class WaterProximityChecker {
             var state = world.getBlockState(offsetPos);
             if (state.getBlock() == Blocks.WATER) {
                 FluidState fluid = state.getFluidState();
-                if (fluid.is(FluidTags.WATER) && fluid.isSource()) {
+                if (fluid.is(FluidTags.WATER)) {
                     return true;
                 }
             }
@@ -45,7 +45,7 @@ public final class WaterProximityChecker {
                         BlockPos checkPos = pos.offset(dx, dy, dz);
                         var state = world.getBlockState(checkPos);
                         var fluidState = world.getFluidState(checkPos);
-                        if (fluidState.is(FluidTags.WATER) && fluidState.isSource()) {
+                        if (fluidState.is(FluidTags.WATER)) {
                             return false;
                         }
                         if (state.hasProperty(BlockStateProperties.WATERLOGGED) && state.getValue(BlockStateProperties.WATERLOGGED)) {
