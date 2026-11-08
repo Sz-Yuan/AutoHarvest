@@ -38,17 +38,19 @@ public final class WaterProximityChecker {
     }
 
     public static boolean hasNoWaterNearby(Level world, BlockPos pos) {
-        for (int dx = -4; dx <= 4; dx++) {
-            for (int dz = -4; dz <= 4; dz++) {
-                {
-                    BlockPos checkPos = pos.offset(dx, 0, dz);
-                    var state = world.getBlockState(checkPos);
-                    var fluidState = world.getFluidState(checkPos);
-                    if (fluidState.is(FluidTags.WATER) && fluidState.isSource()) {
-                        return false;
-                    }
-                    if (state.hasProperty(BlockStateProperties.WATERLOGGED) && state.getValue(BlockStateProperties.WATERLOGGED)) {
-                        return false;
+        for (int yoffset = 0; yoffset <= 1; yoffset++) {
+            for (int dx = -4; dx <= 4; dx++) {
+                for (int dz = -4; dz <= 4; dz++) {
+                    {
+                        BlockPos checkPos = pos.offset(dx, yoffset, dz);
+                        var state = world.getBlockState(checkPos);
+                        var fluidState = world.getFluidState(checkPos);
+                        if (fluidState.is(FluidTags.WATER) && fluidState.isSource()) {
+                            return false;
+                        }
+                        if (state.hasProperty(BlockStateProperties.WATERLOGGED) && state.getValue(BlockStateProperties.WATERLOGGED)) {
+                            return false;
+                        }
                     }
                 }
             }
