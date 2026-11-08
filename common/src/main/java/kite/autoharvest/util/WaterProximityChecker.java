@@ -2,11 +2,10 @@ package kite.autoharvest.util;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.material.FluidState;
 
 public final class WaterProximityChecker {
 
@@ -24,13 +23,9 @@ public final class WaterProximityChecker {
         for (Direction dir : HORIZONTAL_DIRECTIONS) {
             BlockPos offsetPos = pos.relative(dir);
             var state = world.getBlockState(offsetPos);
-            if (state.getBlock() == Blocks.WATER) {
-                FluidState fluid = state.getFluidState();
-                if (fluid.is(FluidTags.WATER)) {
-                    return true;
-                }
-            }
-            if (state.hasProperty(BlockStateProperties.WATERLOGGED) && state.getValue(BlockStateProperties.WATERLOGGED)) {
+            var fluidState = world.getFluidState(offsetPos);
+            if (fluidState.is(FluidTags.SUPPORTS_SUGAR_CANE_ADJACENTLY)
+                    || state.is(BlockTags.SUPPORTS_SUGAR_CANE_ADJACENTLY)) {
                 return true;
             }
         }
